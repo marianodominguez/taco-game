@@ -4,13 +4,25 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/share/cc65/include"
+                "/usr/share/cc65/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
             "intelliSenseMode": "linux-gcc-x64"
+        },
+        {
+            "name": "atari",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/share/cc65/include"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/cc65",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x86"
         }
     ],
     "version": 4

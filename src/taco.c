@@ -3,7 +3,6 @@
 #include <string.h>
 #include <conio.h>
 #include <joystick.h>
-#include <atari.h>
 #include <unistd.h>
 #include <time.h>
 #include <peekpoke.h>
