@@ -21,23 +21,8 @@ endif
 EXELIST_atarixl = \
         taco
 
-ifneq ($(EXELIST_$(SYS)),)
-samples: $(EXELIST_$(SYS))
-else
-samples: notavailable
-endif
-
-# empty target used to skip systems that will not work with any program in this dir
-notavailable:
-ifeq ($(MAKELEVEL),0)
-	@echo "info: atari tests not available for" $(SYS)
-else
-# suppress the "nothing to be done for 'samples' message
-	@echo > $(NULLDEV)
-endif
-
-taco: taco.c
-	$(CL) -t atarixl -o bin/taco src/taco.c
+taco:
+	$(CL) -t atarixl -O -o bin/taco --debug src/taco.c
 	
 clean:
 	@$(DEL) hello 2>$(NULLDEV)
