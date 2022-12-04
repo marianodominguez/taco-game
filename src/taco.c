@@ -8,7 +8,9 @@
 #include <time.h>
 #include <peekpoke.h>
 
-#define KBCODE 0xD209
+//#define KBCODE 0xD209
+
+#define KBCODE 764
 
 unsigned char XSize, YSize;
 char tacostr [] = "TACOT";
@@ -24,10 +26,10 @@ void main_screen(void) {
     (void) bordercolor (COLOR_RED);
     (void) bgcolor (COLOR_GREEN);
     
-    cvlinexy (XSize-10,2, YSize - 5);
-    cvlinexy (XSize-30,2, YSize - 5);
+    cvlinexy (XSize-10+2,2, YSize - 5);
+    cvlinexy (XSize-30-1,2, YSize - 5);
     xcord=XSize-20;
-    chline (21);
+    chline (22);
 }
 
 void draw_line (int line) {
@@ -40,6 +42,7 @@ void draw_line (int line) {
     }
     cputsxy(xcord, line, bits);
     key=PEEK(KBCODE);
+    POKE(764,255);
     if(key!=255) {
         //left
         cputsxy(xcord, line, blank);
@@ -52,7 +55,7 @@ void draw_line (int line) {
             if (xcord<XSize-10) 
                 xcord++;
         }
-            
+        key=255;   
         cputsxy(xcord, line, bits);
     }
     sleep(1);
