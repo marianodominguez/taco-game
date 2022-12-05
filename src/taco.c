@@ -3,6 +3,8 @@
 #include <string.h>
 #include <conio.h>
 #include <joystick.h>
+#include <atari.h>
+#include "atari_lib.h"
 #include <unistd.h>
 #include <time.h>
 #include <peekpoke.h>
@@ -22,9 +24,7 @@ byte border_left;
 byte border_right;
 
 void main_screen(void) {
-
-
-    clrscr ();
+    grmode (0);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -71,8 +71,10 @@ void draw_line (int line) {
         
     }
     cputsxy(xcord, line, bits);
-    sleep(1);
+    //sleep(1);
 }
+
+
 
 int block_at(x,y) {
     char chr1;
@@ -81,11 +83,13 @@ int block_at(x,y) {
     chr1=cpeekc();
     gotoxy(x+1,y+1);
     chr2=cpeekc();
-    if (chr1!=' ' || chr2 !=' ') {
-        return 0;
+    cputcxy(0, 0, chr1);
+    cputcxy(1, 0, chr2);
+    if (chr1!=0 || chr2 !=0) {
+        return 1;
     }
     
-    return 1;
+    return 0;
 }
 
 int main (void)

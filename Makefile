@@ -5,8 +5,6 @@ SYS ?= atarixl
 NULLDEV = /dev/null
 DEL = $(RM)
 RMDIR = $(RM) -r
-LD65_LIB=/usr/share/cc65/lib
-LD65_CFG=/usr/share/cc65/cfg
 
 ifdef CC65_HOME
   AS = $(CC65_HOME)/bin/ca65
@@ -21,7 +19,6 @@ else
 endif
 
 taco:
-	$(CL) -t atarixl -O -o bin/taco src/taco.c
-	
+	$(CL) -t atari -O -o bin/taco src/taco.c src/atari_lib.s
 clean:
-	@$(DEL) hello 2>$(NULLDEV)
+	@$(DEL) taco 2>$(NULLDEV)
