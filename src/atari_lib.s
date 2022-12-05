@@ -11,6 +11,8 @@
         .export         _grmode
         .import         popa
 
+; this implementation is broken. it returns always 0
+
 _cpeekc:             ; Get character
        ldx #$60      ; The screen 
        lda #7        ; Get record
@@ -20,6 +22,8 @@ _cpeekc:             ; Get character
        sta ICBLH,x   ; in accumulator
        jsr CIOV      ; Do the LOCATE
        rts           ; All done
+
+; graphics mode opens the channel. _graphics(mode) cc65 is broken too
 
 _grmode:
        jsr     popa   ;get mode
