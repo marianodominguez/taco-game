@@ -22,6 +22,7 @@ byte max_y;
 byte xcord,prev_x;
 byte border_left;
 byte border_right;
+int delay;
 
 void main_screen(void) {
     //grmode (0);
@@ -44,15 +45,16 @@ void main_screen(void) {
 
 void draw_line (int line) {
     byte key;
-    long i;
+    int i;
     if (line>0)
         cputsxy(xcord, line-1, blank);
 
     if (line==0) {
         int r = rand() % 4;
+        delay=5000;
         strncpy(bits, tacostr+r, 2);
     }
-    ;
+    
     key=PEEK(KBCODE);
     POKE(764,255);
     if(key!=255) {
@@ -61,22 +63,27 @@ void draw_line (int line) {
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
             if (xcord>border_left+1) 
                 xcord--;
+            delay=5000;
         }
             
-        if(key==KEY_ASTERISK || key==KEY_S || key==KEY_RIGHT) {
+        if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
             if (xcord<border_right-2) 
                 xcord++;
+            delay=5000;
+        }
+        if(key==KEY_DASH || key==KEY_S || key==KEY_DOWN) {
+            delay=100;
         }
         key=255;   
         
     }
     cputsxy(xcord, line, bits);
     //sleep(0.5);
-    for (i=0; i<500; i++);
+    for (i=0; i<delay; i++);
 }
 
 //Hack 
-//cgetc returns always 0
+//cpeekc returns always 0
 
 char locate(unsigned char X, unsigned char Y) 
 {   unsigned int screen =0;
