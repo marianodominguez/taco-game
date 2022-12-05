@@ -119,13 +119,15 @@ int main (void)
         draw_line (line);
         if (line>=max_y || block_at(xcord,line)) 
         {
+            if(line==1) end=1;
             line=0;
         }
         else {
             line++;
-        }   
-    }
+        }
 
+    }
+    cputsxy(10, 10, " .... GAME OVER ....");
     cgetc ();
     return EXIT_SUCCESS;
 }
