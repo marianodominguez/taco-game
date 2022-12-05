@@ -24,7 +24,7 @@ byte border_left;
 byte border_right;
 
 void main_screen(void) {
-    grmode (0);
+    //grmode (0);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -44,7 +44,7 @@ void main_screen(void) {
 
 void draw_line (int line) {
     byte key;
-    
+    long i;
     if (line>0)
         cputsxy(xcord, line-1, blank);
 
@@ -71,30 +71,42 @@ void draw_line (int line) {
         
     }
     cputsxy(xcord, line, bits);
-    //sleep(1);
+    //sleep(0.5);
+    for (i=0; i<500; i++);
 }
 
+//Hack 
+//cgetc returns always 0
+
+char locate(unsigned char X, unsigned char Y) 
+{   unsigned int screen =0;
+    screen=PEEK(0x59)*256+PEEK(0x58);
+
+    return PEEK(screen+(Y*40)+X); 
+};
 
 
-int block_at(x,y) {
+char block_at(x,y) {
     char chr1;
     char chr2;
-    gotoxy(x,y+1);
-    chr1=cpeekc();
-    gotoxy(x+1,y+1);
-    chr2=cpeekc();
+    // gotoxy(x,y+1);
+    // chr1=cpeekc();
+    // gotoxy(x+1,y+1);
+    // chr2=cpeekc();
+
+    chr1=locate(x,y+1);
+    chr2=locate(x+1,y+1);
+    
     cputcxy(0, 0, chr1);
     cputcxy(1, 0, chr2);
     if (chr1!=0 || chr2 !=0) {
         return 1;
     }
-    
     return 0;
 }
 
 int main (void)
 {
-
     byte end=0;
     byte line=0;
     unsigned long t;
@@ -104,13 +116,14 @@ int main (void)
   
     while (end==0)
     {
-
-         draw_line (line);
-         line++;
-         if (line>=max_y+1 || block_at(xcord,line)) 
-         {
+        draw_line (line);
+        if (line>=max_y || block_at(xcord,line)) 
+        {
             line=0;
-         }
+        }
+        else {
+            line++;
+        }   
     }
 
     cgetc ();
