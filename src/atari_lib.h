@@ -7,3 +7,4 @@
 
 extern void __fastcall__ _cpeekc (void); 
 extern void __fastcall__ grmode (unsigned char mode);  
+extern void __fastcall__ grmode_hack (unsigned char mode); 

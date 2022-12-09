@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <peekpoke.h>
+#include "splash.h"
+#include "atari_lib.h"
 
 typedef unsigned char byte;
 #define KBCODE 764
@@ -27,7 +29,7 @@ const byte BLANK_LINE[]="              ";
 byte line_buffer[max_y][FWidth+1];
 
 void main_screen(void) {
-    //grmode (0);
+    grmode (0);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -97,6 +99,19 @@ byte locate(byte X, byte Y) {
     return line_buffer[Y][X];
 }
 
+void splash_screen(void) {
+    int screen;
+    int i;
+    //_graphics(7);
+    grmode(7);
+    (void) bordercolor (COLOR_RED);
+ 
+    screen=PEEK(0x58)+PEEK(0x59)*256;
+    for(i=0;i<160/8*96;i++) {
+        POKE(screen+i,SPLASH_IMG[i+32+9]);
+    }
+}
+
 byte block_at(x,y) {
     char chr1;
     char chr2;
@@ -162,6 +177,8 @@ int main (void) {
     init();
     time(&t);
     srand(t);
+    splash_screen();
+    cgetc();
     main_screen();
   
     while (end==0) {

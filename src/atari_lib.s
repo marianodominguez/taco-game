@@ -9,6 +9,7 @@
 
         .export         _cpeekc
         .export         _grmode
+        .export         _grmode_hack
         .import         popa
 
 ; this implementation is broken. it returns always 0
@@ -26,7 +27,7 @@ _cpeekc:             ; Get character
 ; graphics mode opens the channel. _graphics(mode) cc65 is broken too
 
 _grmode:
-       jsr     popa   ;get mode
+       ;jsr     popa   ;get mode
        PHA           ; Store on stack
        LDX #$60      ; IOCB6 for screen
        LDA #$C       ; CLOSE command
@@ -47,5 +48,19 @@ _grmode:
        STA ICAX1,X   ; n+16, n+32 etc.
        JSR CIOV      ; Setup GRAPHICS n
        RTS           ; All done
+
+_grmode_hack:
+       ;jsr     popa   ;get mode
+       PHA
+	LDX #$60      ; The screen again
+   	LDA #>NAME ; Name is "S:"
+   	STA ICBAL,X   ; Low byte
+   	LDA #<NAME ; High byte
+   	STA ICBAH,X
+   	PLA
+   	JSR $EF9C
+   	LDA #0
+   	STA COLCRS+1   ;this is mode <8 
+	RTS
 
 NAME:   .byte "S:",$9B ; screen S:
