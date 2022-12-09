@@ -21,7 +21,10 @@ byte xcord,prev_x;
 byte border_left;
 byte border_right;
 int delay;
-byte line_buffer[max_y][FWidth];
+const byte BLANK_LINE[]="              ";
+
+//zero terminate rows
+byte line_buffer[max_y][FWidth+1];
 
 void main_screen(void) {
     //grmode (0);
@@ -109,10 +112,13 @@ byte block_at(x,y) {
 
 void init(void) {
     int i,j;
-    for(i=0; i< FWidth; i++) {
-        for (j=0;j<max_y;j++) {
+    for (j=0;j<max_y;j++) {
+        for(i=0; i< FWidth; i++) {
             line_buffer[j][i]=' ';
         }
+    }
+    for (j=0;j<max_y;j++) {
+            line_buffer[j][FWidth]='\0';
     }
 }
 
@@ -122,15 +128,16 @@ void eat_tacos() {
     byte j;
     char *idx;
     int position;
-    byte cline[FWidth]; 
+    byte cline[FWidth+1]; 
 
     for(i=max_y;i>=0;i--) {
-        strncpy(cline,line_buffer[i],FWidth);
-        cline[FWidth]=0;       
+        strcpy(cline,line_buffer[i]);
+        found=1;   
         while (found != 0) {
             idx = strstr(cline,"TACO");
-            cputsxy(0, 0, "                       ");
-            cputsxy(0, 0, cline);
+            //cputsxy(0, 0, "                       ");
+            if (strncmp(cline,BLANK_LINE,FWidth) !=0 )
+                cputsxy(0, 0, cline);
             if (idx == NULL) {
                 found=0;
             } 
@@ -139,11 +146,10 @@ void eat_tacos() {
                 found=1;
                 for(j=0;j<4;j++)
                     line_buffer[i][position+j]=' ';
-                strncpy(cline,line_buffer[i],FWidth);
-                cline[FWidth]=0;
+                strcpy(cline,line_buffer[i]);
                 gotoxy(0,1);
                 printf("%d",position);
-                cputsxy(xcord+border_left+1, i, "    ");
+                cputsxy(position+border_left+1, i, "    ");
             }
         }
     }
