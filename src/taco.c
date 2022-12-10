@@ -24,7 +24,7 @@ byte border_left;
 byte border_right;
 int delay;
 const byte BLANK_LINE[]="             ";
-const int MAX_DELAY=MAX_DELAY;
+const int MAX_DELAY=5000;
 
 //zero terminate rows
 byte line_buffer[max_y][FWidth+1];
@@ -106,7 +106,7 @@ void splash_screen(void) {
     grmode(2);
     (void) bordercolor (COLOR_BLUE);
     cputsxy(6,2, "TACOBOT");
-    printf("%s","           Press any key to start");
+    printf("%s","         Press any key to start");
 }
 
 byte block_at(x,y) {
