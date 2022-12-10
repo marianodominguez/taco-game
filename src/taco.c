@@ -24,6 +24,7 @@ byte border_left;
 byte border_right;
 int delay;
 const byte BLANK_LINE[]="             ";
+const int MAX_DELAY=MAX_DELAY;
 
 //zero terminate rows
 byte line_buffer[max_y][FWidth+1];
@@ -44,6 +45,8 @@ void main_screen(void) {
     xcord=FWidth/2-2;
     gotoxy(border_left+1, max_y);
     chline (FWidth-1);
+    cputcxy(border_left, max_y, CH_LLCORNER);
+    cputcxy(border_right, max_y, CH_LRCORNER);
 }
 
 byte locate(byte X, byte Y) {
@@ -61,7 +64,7 @@ void draw_line (byte line) {
 
     if (line==0) {
         int r = rand() % 4;
-        delay=5000;
+        delay=MAX_DELAY;
         strncpy(bits, tacostr+r, 2);
     }
     
@@ -76,19 +79,19 @@ void draw_line (byte line) {
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
             if (xcord>0 && locate(xcord-1,line)==' ') 
                 xcord--;
-            delay=5000;
+            delay=MAX_DELAY;
         }
 
         if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
             if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ') 
                 xcord++;
-            delay=5000;
+            delay=MAX_DELAY;
         }
         if(key==KEY_DASH || key==KEY_S || key==KEY_DOWN) {
             delay=200;
         }
         if(key==KEY_EQUALS || key==KEY_W || key==KEY_UP) {
-            delay=5000;
+            delay=MAX_DELAY;
         }
         key=255;
     }
@@ -99,14 +102,11 @@ void draw_line (byte line) {
     for (i=0; i<delay; i++);
 }
 
-
-
 void splash_screen(void) {
     grmode(2);
     (void) bordercolor (COLOR_BLUE);
     cputsxy(6,2, "TACOBOT");
-    printf("%s","Press Enter");
-
+    printf("%s","           Press any key to start");
 }
 
 byte block_at(x,y) {
@@ -147,9 +147,6 @@ void eat_tacos() {
         found=1;   
         while (found != 0) {
             idx = strstr(cline,"TACO");
-            //cputsxy(0, 0, "                       ");
-            if (strncmp(cline,BLANK_LINE,FWidth) !=0 )
-                cputsxy(0, 0, cline);
             if (idx == NULL) {
                 found=0;
             } 
@@ -192,7 +189,9 @@ int main (void) {
                 line++;
             }
         }
+        cputsxy(10, 9,  " ...................");
         cputsxy(10, 10, " .... GAME OVER ....");
+        cputsxy(10, 11, " ...................");
         cgetc();
     }
     return EXIT_SUCCESS;
