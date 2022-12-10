@@ -46,6 +46,10 @@ void main_screen(void) {
     chline (FWidth-1);
 }
 
+byte locate(byte X, byte Y) {
+    return line_buffer[Y][X];
+}
+
 void draw_line (byte line) {
     byte key;
     int i;
@@ -70,13 +74,13 @@ void draw_line (byte line) {
         line_buffer[line][xcord+1]=' ';
 
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
-            if (xcord>0) 
+            if (xcord>0 && locate(xcord-1,line)==' ') 
                 xcord--;
             delay=5000;
         }
 
         if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
-            if (xcord<border_right-border_left-3) 
+            if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ') 
                 xcord++;
             delay=5000;
         }
@@ -95,12 +99,9 @@ void draw_line (byte line) {
     for (i=0; i<delay; i++);
 }
 
-byte locate(byte X, byte Y) {
-    return line_buffer[Y][X];
-}
+
 
 void splash_screen(void) {
-    int screen;
     grmode(2);
     (void) bordercolor (COLOR_BLUE);
     cputsxy(6,2, "TACOBOT");
@@ -182,8 +183,9 @@ int main (void) {
         while (end==0) {
             draw_line (line);
             if (line>=max_y || block_at(xcord,line)) {
-                if(line==1) end=1;
                 eat_tacos();
+                xcord=FWidth/2-2;
+                if(line==1) end=1;
                 line=0;
             }
             else {
