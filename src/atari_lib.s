@@ -36,9 +36,9 @@ _grmode:
        LDX #$60      ; The screen again
        LDA #3        ; OPEN command
        STA ICCOM,X   ; in command byte
-       LDA #>NAME    ; Name is "S:"
+       LDA #<NAME    ; Name is "S:"
        STA ICBAL,X   ; Low byte
-       LDA #<NAME    ; High byte
+       LDA #>NAME    ; High byte
        STA ICBAH,X
        PLA           ; Get GRAPHICS n
        STA ICAX2,X   ; Graphics mode
@@ -53,9 +53,9 @@ _grmode_hack:
        ;jsr     popa   ;get mode
        PHA
 	LDX #$60      ; The screen again
-   	LDA #>NAME ; Name is "S:"
+   	LDA #<NAME    ; Name is "S:"
    	STA ICBAL,X   ; Low byte
-   	LDA #<NAME ; High byte
+   	LDA #>NAME    ; High byte
    	STA ICBAH,X
    	PLA
    	JSR $EF9C
@@ -63,4 +63,4 @@ _grmode_hack:
    	STA COLCRS+1   ;this is mode <8 
 	RTS
 
-NAME:   .byte "S:",$9B ; screen S:
+NAME:   .byte "S:",$0 ; screen S:

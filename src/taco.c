@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <peekpoke.h>
-#include "splash.h"
 #include "atari_lib.h"
+#include "splash.h"
 
 typedef unsigned char byte;
 #define KBCODE 764
@@ -23,7 +23,7 @@ byte xcord,prev_x;
 byte border_left;
 byte border_right;
 int delay;
-const byte BLANK_LINE[]="              ";
+const byte BLANK_LINE[]="             ";
 
 //zero terminate rows
 byte line_buffer[max_y][FWidth+1];
@@ -101,15 +101,11 @@ byte locate(byte X, byte Y) {
 
 void splash_screen(void) {
     int screen;
-    int i;
-    //_graphics(7);
-    grmode(7);
-    (void) bordercolor (COLOR_RED);
- 
-    screen=PEEK(0x58)+PEEK(0x59)*256;
-    for(i=0;i<160/8*96;i++) {
-        POKE(screen+i,SPLASH_IMG[i+32+9]);
-    }
+    grmode(2);
+    (void) bordercolor (COLOR_BLUE);
+    cputsxy(6,2, "TACOBOT");
+    printf("%s","Press Enter");
+
 }
 
 byte block_at(x,y) {
@@ -174,25 +170,29 @@ int main (void) {
     byte end=0;
     byte line=0;
     unsigned long t;
-    init();
-    time(&t);
-    srand(t);
-    splash_screen();
-    cgetc();
-    main_screen();
-  
-    while (end==0) {
-        draw_line (line);
-        if (line>=max_y || block_at(xcord,line)) {
-            if(line==1) end=1;
-            eat_tacos();
-            line=0;
+    while(1) {
+        line=0;
+        end=0;
+        init();
+        time(&t);
+        srand(t);
+        splash_screen();
+        cgetc();
+        main_screen();
+        while (end==0) {
+            draw_line (line);
+            if (line>=max_y || block_at(xcord,line)) {
+                if(line==1) end=1;
+                eat_tacos();
+                line=0;
+            }
+            else {
+                line++;
+            }
         }
-        else {
-            line++;
-        }
+        cputsxy(10, 10, " .... GAME OVER ....");
+        cgetc();
     }
-    cputsxy(10, 10, " .... GAME OVER ....");
-    cgetc();
     return EXIT_SUCCESS;
+
 }

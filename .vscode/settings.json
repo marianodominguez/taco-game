@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "cstddef": "c"
+        "cstddef": "c",
+        "atari_lib.h": "c"
     }
 }
