@@ -19,6 +19,6 @@ else
 endif
 
 taco:
-	$(CL) -t atari -O -o bin/taco src/taco.c src/atari_lib.s
+	$(CL) -t atarixl  -O -o bin/taco src/taco.c src/atari_lib.s
 clean:
 	@$(DEL) taco 2>$(NULLDEV)

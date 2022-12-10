@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <peekpoke.h>
+#include "atari_lib.h"
+#include "splash.h"
 
 typedef unsigned char byte;
 #define KBCODE 764
@@ -21,13 +23,13 @@ byte xcord,prev_x;
 byte border_left;
 byte border_right;
 int delay;
-const byte BLANK_LINE[]="              ";
+const byte BLANK_LINE[]="             ";
 
 //zero terminate rows
 byte line_buffer[max_y][FWidth+1];
 
 void main_screen(void) {
-    //grmode (0);
+    grmode (0);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -42,6 +44,10 @@ void main_screen(void) {
     xcord=FWidth/2-2;
     gotoxy(border_left+1, max_y);
     chline (FWidth-1);
+}
+
+byte locate(byte X, byte Y) {
+    return line_buffer[Y][X];
 }
 
 void draw_line (byte line) {
@@ -68,13 +74,13 @@ void draw_line (byte line) {
         line_buffer[line][xcord+1]=' ';
 
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
-            if (xcord>0) 
+            if (xcord>0 && locate(xcord-1,line)==' ') 
                 xcord--;
             delay=5000;
         }
 
         if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
-            if (xcord<border_right-border_left-3) 
+            if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ') 
                 xcord++;
             delay=5000;
         }
@@ -93,8 +99,14 @@ void draw_line (byte line) {
     for (i=0; i<delay; i++);
 }
 
-byte locate(byte X, byte Y) {
-    return line_buffer[Y][X];
+
+
+void splash_screen(void) {
+    grmode(2);
+    (void) bordercolor (COLOR_BLUE);
+    cputsxy(6,2, "TACOBOT");
+    printf("%s","Press Enter");
+
 }
 
 byte block_at(x,y) {
@@ -159,23 +171,30 @@ int main (void) {
     byte end=0;
     byte line=0;
     unsigned long t;
-    init();
-    time(&t);
-    srand(t);
-    main_screen();
-  
-    while (end==0) {
-        draw_line (line);
-        if (line>=max_y || block_at(xcord,line)) {
-            if(line==1) end=1;
-            eat_tacos();
-            line=0;
+    while(1) {
+        line=0;
+        end=0;
+        init();
+        time(&t);
+        srand(t);
+        splash_screen();
+        cgetc();
+        main_screen();
+        while (end==0) {
+            draw_line (line);
+            if (line>=max_y || block_at(xcord,line)) {
+                eat_tacos();
+                xcord=FWidth/2-2;
+                if(line==1) end=1;
+                line=0;
+            }
+            else {
+                line++;
+            }
         }
-        else {
-            line++;
-        }
+        cputsxy(10, 10, " .... GAME OVER ....");
+        cgetc();
     }
-    cputsxy(10, 10, " .... GAME OVER ....");
-    cgetc();
     return EXIT_SUCCESS;
+
 }
