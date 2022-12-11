@@ -1,3 +1,4 @@
+.ONESHELL:
 # Run 'make SYS=<target>'; or, set a SYS env.
 # var. to build for another target system.
 SYS ?= atarixl
@@ -21,4 +22,10 @@ endif
 taco:
 	$(CL) -t atarixl  -O -o bin/taco src/taco.c src/atari_lib.s
 clean:
-	@$(DEL) taco 2>$(NULLDEV)
+	@$(DEL) bin/taco bin/taco.atr 2>$(NULLDEV)
+dist: taco 
+	cp assets/disk.atr bin/taco.atr
+	franny -A bin/taco.atr add -i resources/RATA.FNT -o  RATA.FNT
+	franny -A bin/taco.atr add -i resources/DEFAULT.FNT -o DEFAULT.FNT
+	franny -A bin/taco.atr add -i resources/TACOBOT.IM8 -o TACOBOT.IM8
+	franny -A bin/taco.atr add -i resources/RATA.FNT -i bin/taco -o AUTORUN.SYS
