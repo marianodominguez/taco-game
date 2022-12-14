@@ -10,10 +10,11 @@
 #include "atari_lib.h"
 #include "splash.h"
 
-typedef unsigned char byte;
 #define KBCODE 764
 #define FWidth 14
 #define max_y 18
+
+typedef unsigned char byte;
 
 byte XSize, YSize;
 byte tacostr [] = "TACOT";
@@ -103,10 +104,13 @@ void draw_line (byte line) {
 }
 
 void splash_screen(void) {
-    grmode(2);
-    (void) bordercolor (COLOR_BLUE);
-    cputsxy(6,2, "TACOBOT");
-    printf("%s","         Press any key to start");
+    grmode(7+16);
+    if (read_sunraster("TACOBOT.IM8") ==1) {
+        grmode(2);
+        (void) bordercolor (COLOR_BLUE);
+        cputsxy(6,2, "TACOBOT");
+        printf("%s","         Press any key to start");
+    }
 }
 
 byte block_at(x,y) {

@@ -20,7 +20,7 @@ else
 endif
 
 taco:
-	$(CL) -t atarixl  -O -o bin/taco src/taco.c src/atari_lib.s
+	$(CL) -t atarixl -C atarixl-largehimem.cfg -O -o bin/taco src/taco.c src/atari_lib.s src/splash.c
 clean:
 	@$(DEL) bin/taco bin/taco.atr 2>$(NULLDEV)
 dist: taco 
