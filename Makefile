@@ -19,13 +19,15 @@ else
   LD := $(if $(wildcard /usr/bin/ca65*),/usr/bin/ld65,ld65)
 endif
 
-taco:
-	$(CL) -t atarixl -C atarixl-largehimem.cfg -O -o bin/taco src/taco.c src/atari_lib.s src/splash.c
+taco: clean
+	$(CL) -t atarixl -O --start-addr 0x3000 -I include -o bin/taco src/taco.c src/atari_lib.s src/splash.c
 clean:
-	@$(DEL) bin/taco bin/taco.atr 2>$(NULLDEV)
+	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco 
 	cp assets/disk.atr bin/taco.atr
 	franny -A bin/taco.atr add -i resources/RATA.FNT -o  RATA.FNT
 	franny -A bin/taco.atr add -i resources/DEFAULT.FNT -o DEFAULT.FNT
-	franny -A bin/taco.atr add -i resources/TACOBOT.IM8 -o TACOBOT.IM8
-	franny -A bin/taco.atr add -i resources/RATA.FNT -i bin/taco -o AUTORUN.SYS
+	franny -A bin/taco.atr add -i resources/TACOBOT.BMP -o TACOBOT.BMP
+	franny -A bin/taco.atr add -i bin/taco -o AUTORUN.SYS
+test:
+	$(CL) -t atarixl -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
