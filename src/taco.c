@@ -104,8 +104,7 @@ void draw_line (byte line) {
 }
 
 void splash_screen(void) {
-    grmode(7+16);
-    if (read_sunraster("TACOBOT.IM8") ==1) {
+    if (read_sunraster("TACOBOT.BMP") ==1) {
         grmode(2);
         (void) bordercolor (COLOR_BLUE);
         cputsxy(6,2, "TACOBOT");
