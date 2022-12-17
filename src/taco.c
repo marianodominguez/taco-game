@@ -20,12 +20,13 @@ byte XSize, YSize;
 byte tacostr [] = "TACOT";
 byte blank [] = "  ";
 byte bits []  = "  ";
+int score=1;
 byte xcord,prev_x;
 byte border_left;
 byte border_right;
 int delay;
 const byte BLANK_LINE[]="             ";
-const int MAX_DELAY=5000;
+int MAX_DELAY=5000;
 
 //zero terminate rows
 byte line_buffer[max_y][FWidth+1];
@@ -155,15 +156,19 @@ void eat_tacos() {
             } 
             else {
                 position=idx-cline;
-                found=1;
                 for(j=0;j<4;j++)
                     line_buffer[i][position+j]=' ';
                 strcpy(cline,line_buffer[i]);
-                gotoxy(0,1);
-                printf("%d",position);
-                cputsxy(position+border_left+1, i, "    ");
+                gotoxy(0,2);
+                printf("Tacos: %d ",score);
+                score=score+1*found;
+                found++;
+                MAX_DELAY=MAX_DELAY-score*20;
+                if(MAX_DELAY<=200) MAX_DELAY=200;
+                cputsxy(position+border_left+1,i, "    ");
             }
         }
+        found=0;
     }
 }
 

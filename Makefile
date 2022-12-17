@@ -20,7 +20,7 @@ else
 endif
 
 taco: clean
-	$(CL) -t atarixl -O --start-addr 0x3000 -I include -o bin/taco src/taco.c src/atari_lib.s src/splash.c
+	$(CL) -t atari -O -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/taco src/taco.c src/atari_lib.s src/splash.c
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco 
@@ -30,4 +30,4 @@ dist: taco
 	franny -A bin/taco.atr add -i resources/TACOBOT.BMP -o TACOBOT.BMP
 	franny -A bin/taco.atr add -i bin/taco -o AUTORUN.SYS
 test:
-	$(CL) -t atarixl -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
+	$(CL) -t atari -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 

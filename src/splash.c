@@ -5,7 +5,8 @@
 #include <peekpoke.h>
 #include "atari_lib.h"
 
-const char file_header[] = {0x42, 0x4d, 0x46, 0x1e,'\0'};
+const char file_header[] = {0x42, 0x4d, 0x9a, 0x1e,'\0'};
+
 char exit_code=0;
 int screen;
 
@@ -22,24 +23,23 @@ void read_header(FILE* fd) {
     
     strncpy(id,header[0],4);
 
-    for(i=0;i<70-32;i++) {
+    for(i=0;i<154-32;i++) {
        j=fgetc(fd);     
     }
 
     if (strncmp(id, file_header,4)) {
         printf("%s","WRONG FILE TYPE: ");
-        printf("%x",id);
+        printf("%s",id);
         cgetc();
         exit_code=1;
     }
 }
 
-void plot_byte(unsigned char byte, int offset){
+void plot_byte(unsigned char byte, int offset) {
     POKE(screen+offset, byte);
 }
 
 int read_sunraster(char* filename) {
-    int rbyte;
     unsigned char dbyte,nbyte;
     int i=0;
     FILE* fd = fopen(filename, "r");
@@ -48,12 +48,12 @@ int read_sunraster(char* filename) {
     read_header(fd);
     //broken
     //fseek(fd, 66, SEEK_SET);
-    while( rbyte!=EOF || exit_code==1 ) {
-        rbyte=fgetc(fd);
-        dbyte=rbyte<<2;
-        rbyte=fgetc(fd);
-        nbyte=rbyte;
-        plot_byte(nbyte | dbyte,i);
+    while( exit_code!=1 && i<160*96/4 ) {
+        dbyte=fgetc(fd);
+        nbyte=fgetc(fd);
+        dbyte=(dbyte&0xf0)<<2|(dbyte&0x0f)<<4;
+        nbyte=(nbyte>>2)|(nbyte&0x0f);
+        plot_byte(dbyte | nbyte, i);
         i++;
     }
     fclose(fd);
