@@ -105,6 +105,12 @@ void draw_line (byte line) {
 }
 
 void splash_screen(void) {
+    grmode(7+16);
+    _setcolor_low(0,0x1C); //shade
+    _setcolor_low(1,0x9C);
+    _setcolor_low(2,0x34); //border
+
+    
     if (read_sunraster("TACOBOT.BMP") ==1) {
         grmode(2);
         (void) bordercolor (COLOR_BLUE);
