@@ -43,7 +43,6 @@ int read_sunraster(char* filename) {
     unsigned char dbyte,nbyte;
     int i=0;
     FILE* fd = fopen(filename, "r");
-    grmode(7+16);
     screen=PEEK(0x59)*256+PEEK(0x58);
     read_header(fd);
     //broken
