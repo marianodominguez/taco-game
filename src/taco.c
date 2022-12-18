@@ -181,8 +181,10 @@ void eat_tacos() {
                 for(j=0;j<4;j++)
                     line_buffer[i][position+j]=' ';
                 strcpy(cline,line_buffer[i]);
-                gotoxy(0,2);
+                cputsxy(0,0,"<<<<<<<<<<");
+                gotoxy(0,1);
                 printf("Tacos: %d ",score);
+                cputsxy(0,2,"<<<<<<<<<<");
                 score=score+1*found;
                 found++;
                 MAX_DELAY=MAX_DELAY-score*20;
