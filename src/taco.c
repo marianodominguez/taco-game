@@ -33,12 +33,21 @@ int MAX_DELAY=5000;
 byte line_buffer[max_y][FWidth+1];
 
 void main_screen(void) {
+    int i,j;
     grmode (0);
     load_font();
+
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
     
+    for(i=0;i<XSize;i=i+1) {
+        for (j=0;j<24;j=j+3){  
+            cputsxy(i,j, "[" );
+            cputsxy(i,j+1,">" );
+            cputsxy(i,j+2,"[" );
+        }
+    }
     /* Set screen colors */
     (void) textcolor (COLOR_BLACK);
     (void) bordercolor (COLOR_RED);
@@ -51,6 +60,11 @@ void main_screen(void) {
     chline (FWidth-1);
     cputcxy(border_left, max_y, CH_LLCORNER);
     cputcxy(border_right, max_y, CH_LRCORNER);
+    for(i=border_left+1;i<border_right;i++) {
+        for (j=0;j< max_y ;j++){  
+            cputsxy(i,j," ");
+        }
+    }
 }
 
 byte locate(byte X, byte Y) {

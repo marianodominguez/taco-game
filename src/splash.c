@@ -4,9 +4,8 @@
 #include <conio.h>
 #include <peekpoke.h>
 #include "atari_lib.h"
-#pragma data-name (push,"FONT")
 #include "font.h"
-#pragma data-name (pop)
+
 
 const char file_header[] = {0x42, 0x4d, 0x9a, 0x1e,'\0'};
 

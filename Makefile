@@ -21,7 +21,7 @@ else
 endif
 
 taco: clean
-	$(CL) -t atari -C cfg/tacobot.cfg --mapfile tmp/taco.map -O -Wl "-D__RESERVED_MEMORY__=0x3000" -I include -o bin/taco src/taco.c src/font.c src/atari_lib.s src/splash.c
+	$(CL) -t atari -C cfg/tacobot.cfg --mapfile tmp/taco.map -O --start-addr 0x3000 -Wl "-D__RESERVED_MEMORY__=0x3000" -I include -o bin/taco src/taco.c src/font.c src/atari_lib.s src/splash.c
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco 
@@ -31,7 +31,7 @@ dist: taco
 	franny -A bin/taco.atr add -i resources/TACOBOT.BMP -o TACOBOT.BMP
 	franny -A bin/taco.atr add -i bin/taco -o AUTORUN.SYS
 test:
-	$(CL) -t atari -Wl -C cfg/tacobot.cfg  "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
+	$(CL) -t atari -C cfg/tacobot.cfg  -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
 debug: clean
 	$(CC) -t atari -O -I include -o tmp/taco.s src/taco.c
 	$(CC) -t atari  -O -I include -o tmp/font.s src/font.c
