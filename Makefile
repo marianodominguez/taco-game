@@ -1,4 +1,5 @@
 .ONESHELL:
+.PRECIOUS: src/%.s src/%.map
 # Run 'make SYS=<target>'; or, set a SYS env.
 # var. to build for another target system.
 SYS ?= atarixl
@@ -20,14 +21,23 @@ else
 endif
 
 taco: clean
-	$(CL) -t atari -O -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/taco src/taco.c src/atari_lib.s src/splash.c
+	$(CL) -t atari -C cfg/tacobot.cfg --mapfile tmp/taco.map -O -Wl "-D__RESERVED_MEMORY__=0x3000" -I include -o bin/taco src/taco.c src/font.c src/atari_lib.s src/splash.c
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco 
 	cp assets/disk.atr bin/taco.atr
-	franny -A bin/taco.atr add -i resources/RATA.FNT -o  RATA.FNT
-	franny -A bin/taco.atr add -i resources/DEFAULT.FNT -o DEFAULT.FNT
+	franny -A bin/taco.atr add -i resources/RATA.fnt -o  RATA.FNT
+	franny -A bin/taco.atr add -i resources/DEFAULT.fnt -o DEFAULT.FNT
 	franny -A bin/taco.atr add -i resources/TACOBOT.BMP -o TACOBOT.BMP
 	franny -A bin/taco.atr add -i bin/taco -o AUTORUN.SYS
 test:
-	$(CL) -t atari -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
+	$(CL) -t atari -Wl -C cfg/tacobot.cfg  "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
+debug: clean
+	$(CC) -t atari -O -I include -o tmp/taco.s src/taco.c
+	$(CC) -t atari  -O -I include -o tmp/font.s src/font.c
+	$(CC) -t atari  -O -I include -o tmp/splash.s src/splash.c
+	$(AS) -t atari  -o tmp/taco.obj tmp/taco.s  
+	$(AS) -t atari  -o tmp/font.obj tmp/font.s
+	$(AS) -t atari  -o tmp/atari_lib.obj src/atari_lib.s
+	$(AS) -t atari  -o tmp/splash.obj tmp/splash.s
+	$(LD) -o bin/taco -C cfg/tacobot.cfg -D__RESERVED_MEMORY__=0x3000 --mapfile tmp/taco.map  tmp/taco.obj tmp/font.obj tmp/atari_lib.obj tmp/splash.obj atari.lib 
