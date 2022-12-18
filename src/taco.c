@@ -28,11 +28,13 @@ int delay;
 const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
 
+
 //zero terminate rows
 byte line_buffer[max_y][FWidth+1];
 
 void main_screen(void) {
     grmode (0);
+    load_font();
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
