@@ -152,10 +152,10 @@ void draw_line (byte line) {
                 xcord++;
             delay=MAX_DELAY;
         }
-        if(key==KEY_DASH || key==KEY_S || key==KEY_DOWN) {
+        if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN) {
             delay=200;
         }
-        if(key==KEY_EQUALS || key==KEY_W || key==KEY_UP) {
+        if(key==KEY_DASH || key==KEY_W || key==KEY_UP) {
             delay=MAX_DELAY;
         }
         key=255;
