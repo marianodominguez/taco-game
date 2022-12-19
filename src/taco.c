@@ -12,7 +12,7 @@
 
 #define KBCODE 764
 #define FWidth 14
-#define max_y 18
+#define MAX_Y 18
 
 typedef unsigned char byte;
 
@@ -25,12 +25,13 @@ byte xcord,prev_x;
 byte border_left;
 byte border_right;
 int delay;
+
 const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
 
 
-//zero terminate rows
-byte line_buffer[max_y][FWidth+1];
+//zero-terminated rows
+byte line_buffer[MAX_Y][FWidth+1];
 
 void main_screen(void) {
     int i,j;
@@ -41,8 +42,9 @@ void main_screen(void) {
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
     
+    // background decorations  
     for(i=0;i<XSize;i=i+1) {
-        for (j=0;j<24;j=j+3){  
+        for (j=0;j<MAX_Y;j=j+3){  
             cputsxy(i,j, "[" );
             cputsxy(i,j+1,">" );
             cputsxy(i,j+2,"[" );
@@ -53,15 +55,18 @@ void main_screen(void) {
     (void) bordercolor (COLOR_RED);
     (void) bgcolor (COLOR_GREEN);
     
-    cvlinexy (border_left,2, max_y-2);
-    cvlinexy (border_right,2, max_y-2);
+    //Draw scene 
+    cvlinexy (border_left,2, MAX_Y-2);
+    cvlinexy (border_right,2, MAX_Y-2);
     xcord=FWidth/2-2;
-    gotoxy(border_left+1, max_y);
+    gotoxy(border_left+1, MAX_Y);
     chline (FWidth-1);
-    cputcxy(border_left, max_y, CH_LLCORNER);
-    cputcxy(border_right, max_y, CH_LRCORNER);
+    cputcxy(border_left, MAX_Y, CH_LLCORNER);
+    cputcxy(border_right, MAX_Y, CH_LRCORNER);
+
+    //clean play area
     for(i=border_left+1;i<border_right;i++) {
-        for (j=0;j< max_y ;j++){  
+        for (j=0;j< MAX_Y ;j++){  
             cputsxy(i,j," ");
         }
     }
@@ -71,10 +76,52 @@ byte locate(byte X, byte Y) {
     return line_buffer[Y][X];
 }
 
+void rat_anim() {
+    byte x;
+    for(x=0; x<XSize-4; x++) {
+        cputsxy(x, MAX_Y+1, "    & ");
+        cputsxy(x, MAX_Y+2, " #!%\" ");
+        cputsxy(x, MAX_Y+3, "  $  ' ");       
+    }
+    cputsxy(XSize-4, MAX_Y+1, "     ");
+    cputsxy(XSize-4, MAX_Y+2, "     ");
+    cputsxy(XSize-4, MAX_Y+3, "     ");  
+}
+
+
+// When make a word, rat eats the last line
+void rat_routine() {
+    byte i,x;
+    byte buffer[FWidth+1];
+    byte temp[FWidth+1];
+    strcpy(buffer,line_buffer[MAX_Y-1]);
+    buffer[FWidth]='\0' ;
+
+    for(i=MAX_Y-1; i>1; i--) {
+        strcpy(temp,line_buffer[i-1]);
+        temp[FWidth]='\0'; 
+        cputsxy(border_left+1, i,"xxxxxxxxxxxxxx");
+        strcpy(line_buffer[i],temp);
+        cputsxy(border_left+1, i,temp);
+    }
+    cvlinexy (border_right,2, MAX_Y-2);
+    cputsxy(border_left+1, MAX_Y+1 ,buffer);
+    sleep(1);
+    for (x=0; x<border_left; x++)
+        cputsxy(x, MAX_Y+2, " Rat ate the taco" );
+
+    sleep(1);
+    rat_anim();
+     for (x=0; x<border_left+10; x++)
+        cputsxy(x, MAX_Y+2,BLANK_LINE );
+    cputsxy( border_left+1, MAX_Y+1, BLANK_LINE );
+}
+
+
 void draw_line (byte line) {
     byte key;
     int i;
-    if (line>0 && line-1<max_y) {
+    if (line>0 && line-1<MAX_Y) {
         cputsxy(xcord+border_left+1, line-1, blank);
         line_buffer[line-1][xcord]=' ';
         line_buffer[line-1][xcord+1]=' ';
@@ -131,7 +178,7 @@ void splash_screen(void) {
         grmode(2);
         (void) bordercolor (COLOR_BLUE);
         cputsxy(6,2, "TACOBOT");
-        printf("%s","         Press any key to start");
+        printf("%s","         Press START key");
     }
 }
 
@@ -150,14 +197,15 @@ byte block_at(x,y) {
 
 void init(void) {
     int i,j;
-    for (j=0;j<max_y;j++) {
+    for (j=0;j<MAX_Y;j++) {
         for(i=0; i< FWidth; i++) {
             line_buffer[j][i]=' ';
         }
     }
-    for (j=0;j<max_y;j++) {
+    for (j=0;j<MAX_Y;j++) {
             line_buffer[j][FWidth]='\0';
     }
+    score=1;
 }
 
 void eat_tacos() {
@@ -168,7 +216,7 @@ void eat_tacos() {
     int position;
     byte cline[FWidth+1]; 
 
-    for(i=max_y;i>=0;i--) {
+    for(i=MAX_Y;i>=0;i--) {
         strcpy(cline,line_buffer[i]);
         found=1;   
         while (found != 0) {
@@ -191,8 +239,18 @@ void eat_tacos() {
                 if(MAX_DELAY<=200) MAX_DELAY=200;
                 cputsxy(position+border_left+1,i, "    ");
             }
-        }
+            if (found!=0) rat_routine();
+        }            
         found=0;
+    }
+}
+
+void wait_start() {
+    int i;
+    int key=0;
+    while (key!=6) {
+        key = PEEK(0xD01f);
+        for (i=0; i<500; i++);
     }
 }
 
@@ -207,11 +265,11 @@ int main (void) {
         time(&t);
         srand(t);
         splash_screen();
-        cgetc();
+        wait_start();
         main_screen();
         while (end==0) {
             draw_line (line);
-            if (line>=max_y || block_at(xcord,line)) {
+            if (line>=MAX_Y || block_at(xcord,line)) {
                 eat_tacos();
                 xcord=FWidth/2-2;
                 if(line==1) end=1;
@@ -221,9 +279,13 @@ int main (void) {
                 line++;
             }
         }
-        cputsxy(10, 9,  " ...................");
-        cputsxy(10, 10, " .... GAME OVER ....");
-        cputsxy(10, 11, " ...................");
+        cputsxy(7, 9,  "============================");
+        cputsxy(7, 10, "=                          =");
+        cputsxy(7, 11, "=        GAME OVER         =");
+        cputsxy(7, 12, "=                          =");
+        cputsxy(7, 13, "= PRESS ENTER TO TRY AGAIN =");
+        cputsxy(7, 14, "=                          =");
+        cputsxy(7, 15, "============================");
         cgetc();
     }
     return EXIT_SUCCESS;
