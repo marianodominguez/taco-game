@@ -18,17 +18,15 @@ typedef unsigned char byte;
 
 byte XSize, YSize;
 byte tacostr [] = "TACOT";
-byte blank [] = "  ";
-byte bits []  = "  ";
-int score=1;
+byte blank []   = "  ";
+byte bits []    = "  ";
+int score       = 1;
 byte xcord,prev_x;
 byte border_left;
 byte border_right;
 int delay;
-
 const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
-
 
 //zero-terminated rows
 byte line_buffer[MAX_Y][FWidth+1];
@@ -61,7 +59,7 @@ void main_screen(void) {
     xcord=FWidth/2-2;
     gotoxy(border_left+1, MAX_Y);
     chline (FWidth-1);
-    cputcxy(border_left, MAX_Y, CH_LLCORNER);
+    cputcxy(border_left,  MAX_Y, CH_LLCORNER);
     cputcxy(border_right, MAX_Y, CH_LRCORNER);
 
     //clean play area
@@ -178,7 +176,10 @@ void splash_screen(void) {
     _setcolor_low(0,0x1C); //shade
     _setcolor_low(1,0x9C);
     _setcolor_low(2,0x34); //border
-
+    
+    sound(0, 100, 0xC0, 12);
+    sleep(1);
+    sound(0,0,0,0);
     
     if (read_sunraster("TACOBOT.BMP") ==1) {
         grmode(2);
@@ -186,6 +187,7 @@ void splash_screen(void) {
         cputsxy(6,2, "TACOBOT");
         printf("%s","         Press START key");
     }
+
 }
 
 byte block_at(x,y) {

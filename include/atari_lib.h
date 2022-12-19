@@ -8,3 +8,4 @@
 extern void __fastcall__ _cpeekc (void); 
 extern void __fastcall__ grmode (unsigned char mode);  
 extern void __fastcall__ grmode_hack (unsigned char mode); 
+extern void __fastcall__ sound (unsigned char voice, unsigned char pitch, unsigned char distortion, unsigned char volume); 
