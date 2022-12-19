@@ -206,6 +206,7 @@ void init(void) {
             line_buffer[j][FWidth]='\0';
     }
     score=1;
+    delay=5000;
 }
 
 void eat_tacos() {
@@ -235,8 +236,8 @@ void eat_tacos() {
                 cputsxy(0,2,"<<<<<<<<<<");
                 score=score+1*found;
                 found++;
-                MAX_DELAY=MAX_DELAY-score*20;
-                if(MAX_DELAY<=200) MAX_DELAY=200;
+                MAX_DELAY=MAX_DELAY-score*10;
+                if(MAX_DELAY<=300) MAX_DELAY=300;
                 cputsxy(position+border_left+1,i, "    ");
             }
             if (found!=0) rat_routine();
