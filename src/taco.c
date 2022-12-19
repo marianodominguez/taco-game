@@ -81,7 +81,7 @@ void rat_anim() {
     for(x=0; x<XSize-4; x++) {
         cputsxy(x, MAX_Y+1, "    & ");
         cputsxy(x, MAX_Y+2, " #!%\" ");
-        cputsxy(x, MAX_Y+3, "  $  ' ");       
+        cputsxy(x, MAX_Y+3, "  $ '  ");       
     }
     cputsxy(XSize-4, MAX_Y+1, "     ");
     cputsxy(XSize-4, MAX_Y+2, "     ");
