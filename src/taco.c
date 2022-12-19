@@ -142,14 +142,20 @@ void draw_line (byte line) {
         line_buffer[line][xcord+1]=' ';
 
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
-            if (xcord>0 && locate(xcord-1,line)==' ') 
+            if (xcord>0 && locate(xcord-1,line)==' ')  {
+                cputsxy(xcord+border_left+1, line, "  ");
                 xcord--;
+                cputsxy(xcord+border_left+1, line, bits);
+            }
             delay=MAX_DELAY;
         }
 
         if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
-            if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ') 
+            if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ')  {
+                cputsxy(xcord+border_left+1, line," ");
                 xcord++;
+                cputsxy(xcord+border_left+1, line, bits);
+            }
             delay=MAX_DELAY;
         }
         if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN) {
