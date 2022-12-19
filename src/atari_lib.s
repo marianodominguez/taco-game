@@ -10,6 +10,7 @@
         .export         _cpeekc
         .export         _grmode
         .export         _grmode_hack
+        .export         _sound
         .import         popa
 
 ; this implementation is broken. it returns always 0
@@ -62,5 +63,19 @@ _grmode_hack:
    	LDA #0
    	STA COLCRS+1   ;this is mode <8 
 	RTS
+; voice, pitch, distortion,volume
+_sound:
+       ldx #0
+       stx AUDCTL
+       ldx #3
+       stx SKCTL  ; init sound
+       tax ;get voice
+       jsr popa ;get pitch
+       sta AUDF1,x ; store pitch
+       jsr popa; ;get distortion
+       sta AUDC1,x 
+       jsr popa ;get volume
+       ora AUDC1,x
+       rts
 
 NAME:   .byte "S:",$0 ; screen S:
