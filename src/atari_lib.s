@@ -9,7 +9,6 @@
 
         .export         _cpeekc
         .export         _grmode
-        .export         _grmode_hack
         .export         _sound
         .import         popa
 
@@ -50,32 +49,52 @@ _grmode:
        JSR CIOV      ; Setup GRAPHICS n
        RTS           ; All done
 
-_grmode_hack:
-       ;jsr     popa   ;get mode
-       PHA
-	LDX #$60      ; The screen again
-   	LDA #<NAME    ; Name is "S:"
-   	STA ICBAL,X   ; Low byte
-   	LDA #>NAME    ; High byte
-   	STA ICBAH,X
-   	PLA
-   	JSR $EF9C
-   	LDA #0
-   	STA COLCRS+1   ;this is mode <8 
-	RTS
-; voice, pitch, distortion,volume
-_sound:
-       ldx #0
-       stx AUDCTL
-       ldx #3
-       stx SKCTL  ; init sound
-       tax ;get voice
-       jsr popa ;get pitch
+; play sound, arguments: voice, pitch, distortion, volume
+.proc  _sound
+       sta STORE2    ;save volume
+       jsr popa      ;get distortion
+       sta STORE1    ;save distortion 
+       jsr popa      ;get pitch
+       pha           ;save in stack
+       jsr popa      ;get voice
+       
+       asl a         ;adjust voice *2 for offset in x
+       tax 
+       pla           ;get pitch from stack
        sta AUDF1,x ; store pitch
-       jsr popa; ;get distortion
-       sta AUDC1,x 
-       jsr popa ;get volume
-       ora AUDC1,x
+       
+       lda #0
+       sta AUDCTL
+       lda #3
+       stx SKCTL  ; init sound
+
+       lda STORE1    ;get distortion
+       asl a         ;ignore the high nibble
+       asl a 
+       asl a 
+       asl a
+       clc           ; setup for adding volume 
+       adc STORE2    ; add volume
+       sta AUDC1,x   ; volume + distortion in control channel
+       rts
+.endproc
+
+; print a single byte in screen+y_register, restores x and accumulator
+__debug:
+       sta tval
+       txa 
+       pha ; save x
+       lda tval
+       adc #16  ;use icode for numbers 0-9
+       clc
+       sta (SAVMSC),y
+       pla 
+       tax ; restore x
+       lda tval
        rts
 
 NAME:   .byte "S:",$0 ; screen S:
+           .bss
+STORE1:    .res    1
+STORE2:    .res    1
+tval:    .res    1
