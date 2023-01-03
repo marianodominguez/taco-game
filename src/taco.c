@@ -11,7 +11,7 @@
 #include "splash.h"
 
 #define KBCODE 764
-#define FWidth 14
+#define FWidth 13
 #define MAX_Y 18
 
 typedef unsigned char byte;
@@ -42,10 +42,11 @@ void main_screen(void) {
     
     // background decorations  
     for(i=0;i<XSize;i=i+1) {
-        for (j=0;j<MAX_Y;j=j+3){  
+        for (j=0;j<MAX_Y;j=j+4){  
             cputsxy(i,j, "[" );
             cputsxy(i,j+1,">" );
             cputsxy(i,j+2,"[" );
+            cputsxy(i,j+3," ");
         }
     }
     /* Set screen colors */
@@ -98,7 +99,7 @@ void rat_routine() {
     for(i=MAX_Y-1; i>1; i--) {
         strcpy(temp,line_buffer[i-1]);
         temp[FWidth]='\0'; 
-        cputsxy(border_left+1, i,"xxxxxxxxxxxxxx");
+        cputsxy(border_left+1, i,"          ");
         strcpy(line_buffer[i],temp);
         cputsxy(border_left+1, i,temp);
     }
@@ -115,7 +116,7 @@ void rat_routine() {
     cputsxy( border_left+1, MAX_Y+1, BLANK_LINE );
 }
 
-
+/*Draw the falling piece in screen, add X for high levels*/
 void draw_line (byte line) {
     byte key;
     int i;
@@ -127,8 +128,12 @@ void draw_line (byte line) {
 
     if (line==0) {
         int r = rand() % 4;
+        //tacobot sends the occasional X
         delay=MAX_DELAY;
         strncpy(bits, tacostr+r, 2);
+        if (score>=20) {
+            if (rand()%10<=2) bits[rand()%2]='X';
+        }
     }
     
     key=PEEK(KBCODE);
@@ -176,16 +181,15 @@ void splash_screen(void) {
     _setcolor_low(0,0x1C); //shade
     _setcolor_low(1,0x9C);
     _setcolor_low(2,0x34); //border
-    
-    sound(0, 100, 0xC0, 12);
-    sleep(1);
-    sound(0,0,0,0);
-    
     if (read_sunraster("TACOBOT.BMP") ==1) {
         grmode(2);
         (void) bordercolor (COLOR_BLUE);
         cputsxy(6,2, "TACOBOT");
         printf("%s","         Press START key");
+    } else {    
+        sound(0, 100, 0xC0, 12);
+        sleep(1);
+        sound(0,0,0,0);
     }
 
 }
@@ -217,6 +221,49 @@ void init(void) {
     delay=5000;
 }
 
+
+void play_sound_rat(void) {
+    int j,i=0;
+    for (i=0; i<144; i++) {
+        sound(0,144-i,10,8);
+        for (j=0; j<50; j++);
+    }
+    sound(0,0,0,0);
+    _setcolor_low(1,0xFF); 
+    sound(0,20,10,10);
+    for (i=0; i<500; i++); //change this for timer delay
+    sound(0,0,0,0);
+    sound(0,144,23,8);
+    for (i=0; i<500; i++); //change this for timer delay
+    sound(0,0,0,0);
+}
+
+void play_sound_taco(void) {
+    int i=0;
+    sound(0,144,10,8);
+    for (i=0; i<1000; i++) {
+        _setcolor_low(1,(unsigned char) i); 
+    }
+    sound(0,0,0,0);
+    _setcolor_low(1,0xFF); 
+    sound(0,20,10,10);
+    for (i=0; i<500; i++); //change this for timer delay
+    sound(0,0,0,0);
+    sound(0,144,23,8);
+    for (i=0; i<500; i++); //change this for timer delay
+    sound(0,0,0,0);
+}
+
+void print_score() {
+    cputsxy(border_right+1,0,"<<<<<<<<<<");
+    gotoxy(border_right+1,1);
+    printf("Tacos: %d ",score);
+    cputsxy(border_right+1,2,"<<<<<<<<<<");
+    if (score>=15) {
+        _setcolor_low(2,0x36);
+    }
+}
+
 void eat_tacos() {
     int i;
     char found=1;
@@ -238,17 +285,18 @@ void eat_tacos() {
                 for(j=0;j<4;j++)
                     line_buffer[i][position+j]=' ';
                 strcpy(cline,line_buffer[i]);
-                cputsxy(0,0,"<<<<<<<<<<");
-                gotoxy(0,1);
-                printf("Tacos: %d ",score);
-                cputsxy(0,2,"<<<<<<<<<<");
+                print_score();
                 score=score+1*found;
                 found++;
                 MAX_DELAY=MAX_DELAY-score*10;
                 if(MAX_DELAY<=300) MAX_DELAY=300;
                 cputsxy(position+border_left+1,i, "    ");
             }
-            if (found!=0) rat_routine();
+            if (found!=0) {
+                play_sound_taco();
+                rat_routine();
+                play_sound_rat();
+            }
         }            
         found=0;
     }
@@ -271,10 +319,9 @@ int main (void) {
         line=0;
         end=0;
         init();
-        time(&t);
-        srand(t);
         splash_screen();
         wait_start();
+        _randomize(); 
         main_screen();
         while (end==0) {
             draw_line (line);
