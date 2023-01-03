@@ -27,6 +27,8 @@ byte border_right;
 int delay;
 const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
+byte temp[FWidth];
+byte buffer[FWidth];
 
 //zero-terminated rows
 byte line_buffer[MAX_Y][FWidth+1];
@@ -91,24 +93,22 @@ void rat_anim() {
 // When make a word, rat eats the last line
 void rat_routine() {
     byte i,x;
-    byte buffer[FWidth+1];
-    byte temp[FWidth+1];
-    strcpy(buffer,line_buffer[MAX_Y-1]);
-    buffer[FWidth]='\0' ;
-
+    strncpy(buffer,line_buffer[MAX_Y-1],FWidth-1);
     for(i=MAX_Y-1; i>1; i--) {
-        strcpy(temp,line_buffer[i-1]);
-        temp[FWidth]='\0'; 
-        cputsxy(border_left+1, i,"          ");
-        strcpy(line_buffer[i],temp);
+        //shift lines down
+        strncpy(temp,line_buffer[i-1],FWidth-2);
+        //clean current line
+        //cputsxy(border_left+1, i,"          ");
+        strncpy(line_buffer[i],temp,FWidth-2);
+        //restore line
         cputsxy(border_left+1, i,temp);
     }
-    cvlinexy (border_right,2, MAX_Y-2);
+    //cvlinexy (border_right,2, MAX_Y-2);    
+    //drop bottom line
     cputsxy(border_left+1, MAX_Y+1 ,buffer);
     sleep(1);
     for (x=0; x<border_left; x++)
         cputsxy(x, MAX_Y+2, " Rat ate the taco" );
-
     sleep(1);
     rat_anim();
      for (x=0; x<border_left+10; x++)
@@ -246,7 +246,7 @@ void play_sound_taco(void) {
     }
     sound(0,0,0,0);
     _setcolor_low(1,0xFF); 
-    sound(0,20,10,10);
+    sound(0,20,20,10);
     for (i=0; i<500; i++); //change this for timer delay
     sound(0,0,0,0);
     sound(0,144,23,8);
@@ -264,6 +264,11 @@ void print_score() {
     }
 }
 
+/*
+Remove the word "taco" from grid
+Set score if word was formed
+
+*/
 void eat_tacos() {
     int i;
     char found=1;
@@ -288,6 +293,7 @@ void eat_tacos() {
                 print_score();
                 score=score+1*found;
                 found++;
+                //for high scores, increase speed
                 MAX_DELAY=MAX_DELAY-score*10;
                 if(MAX_DELAY<=300) MAX_DELAY=300;
                 cputsxy(position+border_left+1,i, "    ");
@@ -314,7 +320,6 @@ void wait_start() {
 int main (void) {
     byte end=0;
     byte line=0;
-    unsigned long t;
     while(1) {
         line=0;
         end=0;
