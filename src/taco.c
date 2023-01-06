@@ -29,6 +29,9 @@ const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
 byte temp[FWidth];
 byte buffer[FWidth];
+byte rat1[5]={32,32,0,32,32};
+byte rat2[5]={32,1,2,7,32};
+byte rat3[5]={32,32,6,4,32};
 
 //zero-terminated rows
 byte line_buffer[MAX_Y][FWidth+1];
@@ -51,6 +54,7 @@ void main_screen(void) {
             cputsxy(i,j+3," ");
         }
     }
+
     /* Set screen colors */
     (void) textcolor (COLOR_BLACK);
     (void) bordercolor (COLOR_RED);
@@ -64,7 +68,7 @@ void main_screen(void) {
     chline (FWidth-1);
     cputcxy(border_left,  MAX_Y, CH_LLCORNER);
     cputcxy(border_right, MAX_Y, CH_LRCORNER);
-
+ 
     //clean play area
     for(i=border_left+1;i<border_right;i++) {
         for (j=0;j< MAX_Y ;j++){  
@@ -77,13 +81,35 @@ byte locate(byte X, byte Y) {
     return line_buffer[Y][X];
 }
 
-void rat_anim() {
-    byte x;
-    for(x=0; x<XSize-4; x++) {
-        cputsxy(x, MAX_Y+1, "    & ");
-        cputsxy(x, MAX_Y+2, " #!%\" ");
-        cputsxy(x, MAX_Y+3, "  $ '  ");       
+void play_sound_rat(void) {
+    int j,i=0;
+    for (i=0; i<144; i++) {
+        sound(0,144-i,10,8);
+        for (j=0; j<50; j++);
     }
+    sound(0,0,0,0);
+    _setcolor_low(1,0xFF); 
+    sound(0,20,10,10);
+    for (i=0; i<500; i++); //change this for timer delay
+    sound(0,0,0,0);
+    sound(0,144,23,8);
+    for (i=0; i<500; i++); //change this for timer delay
+    sound(0,0,0,0);
+}
+
+
+void rat_anim() {
+    byte x,i;
+    int d;
+    for(x=0; x<XSize-4; x++) {
+        for(i=0;i<5;i++){
+            cputcxy(x+i, MAX_Y+1, rat1[i]);
+            cputcxy(x+i, MAX_Y+2, rat2[i]);
+            cputcxy(x+i, MAX_Y+3, rat3[i]); 
+        }
+        for(d=0; d<500; d++);
+    }
+    //TODO second frame    
     cputsxy(XSize-4, MAX_Y+1, "     ");
     cputsxy(XSize-4, MAX_Y+2, "     ");
     cputsxy(XSize-4, MAX_Y+3, "     ");  
@@ -95,10 +121,8 @@ void rat_routine() {
     byte i,x;
     strncpy(buffer,line_buffer[MAX_Y-1],FWidth-1);
     for(i=MAX_Y-1; i>1; i--) {
-        //shift lines down
         strncpy(temp,line_buffer[i-1],FWidth-2);
         //clean current line
-        //cputsxy(border_left+1, i,"          ");
         strncpy(line_buffer[i],temp,FWidth-2);
         //restore line
         cputsxy(border_left+1, i,temp);
@@ -110,6 +134,7 @@ void rat_routine() {
     for (x=0; x<border_left; x++)
         cputsxy(x, MAX_Y+2, " Rat ate the taco" );
     sleep(1);
+    play_sound_rat();
     rat_anim();
      for (x=0; x<border_left+10; x++)
         cputsxy(x, MAX_Y+2,BLANK_LINE );
@@ -222,22 +247,6 @@ void init(void) {
 }
 
 
-void play_sound_rat(void) {
-    int j,i=0;
-    for (i=0; i<144; i++) {
-        sound(0,144-i,10,8);
-        for (j=0; j<50; j++);
-    }
-    sound(0,0,0,0);
-    _setcolor_low(1,0xFF); 
-    sound(0,20,10,10);
-    for (i=0; i<500; i++); //change this for timer delay
-    sound(0,0,0,0);
-    sound(0,144,23,8);
-    for (i=0; i<500; i++); //change this for timer delay
-    sound(0,0,0,0);
-}
-
 void play_sound_taco(void) {
     int i=0;
     sound(0,144,10,8);
@@ -301,7 +310,6 @@ void eat_tacos() {
             if (found!=0) {
                 play_sound_taco();
                 rat_routine();
-                play_sound_rat();
             }
         }            
         found=0;
