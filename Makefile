@@ -25,10 +25,13 @@ taco: clean
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco 
-	cp assets/disk.atr bin/taco.atr
-	franny -A bin/taco.atr add -i resources/RATA.fnt -o  RATA.FNT
-	franny -A bin/taco.atr add -i resources/TACOBOT.BMP -o TACOBOT.BMP
-	franny -A bin/taco.atr add -i bin/taco -o AUTORUN.SYS
+	mkdir -p tmp
+	rm -rf tmp/*
+	cp assets/blank.atr bin/taco.atr
+	cp bin/taco tmp/AUTO
+	cp resources/RATA.fnt tmp/RATA.FNT
+	cp resources/TACOBOT.BMP tmp/TACOBOT.BMP
+	dir2atr -md -B assets/xbootdos.obx bin/taco.atr tmp
 test:
 	$(CL) -t atari -C cfg/tacobot.cfg  -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
 debug: clean
