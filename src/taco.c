@@ -9,6 +9,7 @@
 #include <peekpoke.h>
 #include "atari_lib.h"
 #include "splash.h"
+#include <joystick.h>
 
 #define KBCODE 764
 #define FWidth 13
@@ -29,6 +30,7 @@ const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
 byte temp[FWidth];
 byte buffer[FWidth];
+unsigned char Joystick=1;
 byte rat1[5]={32,32,0,32,32};
 byte rat2[5]={32,1,2,7,32};
 byte rat3[5]={32,32,6,4,32};
@@ -40,7 +42,7 @@ void main_screen(void) {
     int i,j;
     grmode (0);
     load_font();
-
+    Joystick = joy_load_driver (atrstd_joy);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -145,6 +147,7 @@ void rat_routine() {
 void draw_line (byte line) {
     byte key;
     int i;
+    unsigned char J=0;
     if (line>0 && line-1<MAX_Y) {
         cputsxy(xcord+border_left+1, line-1, blank);
         line_buffer[line-1][xcord]=' ';
@@ -162,14 +165,17 @@ void draw_line (byte line) {
     }
     
     key=PEEK(KBCODE);
-    POKE(764,255);
+    POKE(KBCODE,255);
+    if (Joystick==JOY_ERR_OK) {
+        J = joy_read (JOY_1);
+    }
     if(key!=255) {
         //left
         cputsxy(xcord+border_left+1, line, blank);
         line_buffer[line][xcord]=' ';
         line_buffer[line][xcord+1]=' ';
 
-        if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
+        if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT || JOY_LEFT (J)) {
             if (xcord>0 && locate(xcord-1,line)==' ')  {
                 cputsxy(xcord+border_left+1, line, "  ");
                 xcord--;
@@ -178,7 +184,7 @@ void draw_line (byte line) {
             delay=MAX_DELAY;
         }
 
-        if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
+        if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT || JOY_RIGHT (J)) {
             if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ')  {
                 cputsxy(xcord+border_left+1, line," ");
                 xcord++;
@@ -186,10 +192,10 @@ void draw_line (byte line) {
             }
             delay=MAX_DELAY;
         }
-        if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN) {
+        if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN || JOY_DOWN (J)) {
             delay=200;
         }
-        if(key==KEY_DASH || key==KEY_W || key==KEY_UP) {
+        if(key==KEY_DASH || key==KEY_W || key==KEY_UP || JOY_UP (J)) {
             delay=MAX_DELAY;
         }
         key=255;
@@ -198,7 +204,8 @@ void draw_line (byte line) {
     line_buffer[line][xcord]=bits[0];
     line_buffer[line][xcord+1]=bits[1];
     //sleep(0.5);
-    for (i=0; i<delay; i++);
+    for (i=0; i<delay; i++) {
+    }
 }
 
 void splash_screen(void) {
