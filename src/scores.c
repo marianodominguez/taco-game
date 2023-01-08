@@ -2,7 +2,6 @@
 #include <peekpoke.h>
 #include "byte.h"
 #include <stdio.h>
-#include <atari.h>
 #include <conio.h>
 
 /**
@@ -17,13 +16,6 @@
 
 byte _buffer[SECTOR_SIZE];
 
-int high_scores[10];
-byte high_names[6][10];
-
-byte rat1[5]={32,32,0,32,32};
-byte rat2[5]={32,1,2,7,32};
-byte rat3[5]={32,32,6,4,32};
-
 /**
  * Write sector to disk, returns true if performed
 */
@@ -32,7 +24,7 @@ byte write_sector(byte* values, byte sector) {
     byte sector_lo = sector - sector_hi*256;
     byte buffer_hi = (int)(values) / 256;
     byte buffer_lo = (int)(values) - buffer_hi*256;
-    //printf("%d,%d\n",buffer_hi,buffer_lo);
+    printf("%x,%x=%x\n",buffer_hi,buffer_lo,buffer);
 
     POKE(DCB+1, 1);
     POKE(DCB+2, 0x50);
@@ -52,7 +44,7 @@ byte read_sector(byte* buffer, byte sector) {
     byte sector_lo = sector - sector_hi*256;
     byte buffer_hi = (int)(buffer) / 256;
     byte buffer_lo = (int)(buffer) - buffer_hi*256;
-    //printf("%d,%d\n",buffer_hi,buffer_lo);
+    printf("%x,%x=%x\n",buffer_hi,buffer_lo,buffer);
 
     POKE(DCB+1, 1);
     POKE(DCB+2, 0x52);
@@ -103,31 +95,3 @@ int load_scores(int scores[],byte names[NSIZE][NSCORES]) {
     return v;
 }
 
-void high_scores_screen() {
-    byte i;
-    _graphics(2);
-    _setcolor_low(0,0x24); // background
-    _setcolor_low(1,0x2E); // font1
-    _setcolor_low(2,0x00); //
-    _setcolor_low(3,0x25); // text window
-
-    if(!load_scores(high_scores, high_names) ) {
-        printf("Unable to load high scores ... press any key" );
-        return;
-    }
-
-    for (i = 0; i < 3; i++)
-    {
-        cputcxy(i, 0, rat1[i]);
-        cputcxy(i, 1, rat2[i]);
-        cputcxy(i, 2, rat3[i]);
-    }
-
-    cputsxy(6,1," * HIGH SCORES *" );
-
-    for(i=0; i<NSCORES; i++) {
-        gotoxy(0,i+2);
-        printf("%d - %s", high_scores[i], high_names[i]);
-    }
-
-}
