@@ -30,6 +30,13 @@ byte temp[FWidth];
 byte buffer[FWidth];
 byte Joystick=1;
 
+int high_scores[10];
+byte high_names[6][10];
+
+byte rat1[5]={32,32,0,32,32};
+byte rat2[5]={32,1,2,7,32};
+byte rat3[5]={32,32,6,4,32};
+
 //zero-terminated rows
 byte line_buffer[MAX_Y][FWidth+1];
 
@@ -71,6 +78,32 @@ void main_screen(void) {
         for (j=0;j< MAX_Y ;j++){
             cputsxy(i,j," ");
         }
+    }
+}
+
+void high_scores_screen() {
+    byte i;
+    _graphics(2);
+    _setcolor_low(0,0x24); // background
+    _setcolor_low(1,0x2E); // font1
+    _setcolor_low(2,0x00); //
+    _setcolor_low(3,0x25); // text window
+
+    if(!load_scores(high_scores, high_names) ) {
+        printf("Unable to load high scores ... press any key" );
+        return;
+    }
+    for (i = 0; i < 3; i++)
+    {
+        cputcxy(i, 0, rat1[i]);
+        cputcxy(i, 1, rat2[i]);
+        cputcxy(i, 2, rat3[i]);
+    }
+    cputsxy(6,1," * HIGH SCORES *" );
+
+    for(i=0; i<NSCORES; i++) {
+        gotoxy(0,i+2);
+        printf("%d - %s", high_scores[i], high_names[i]);
     }
 }
 
