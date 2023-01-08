@@ -3,19 +3,17 @@
 #include <string.h>
 #include <conio.h>
 #include <joystick.h>
-#include <atari.h>
 #include <unistd.h>
 #include <time.h>
 #include <peekpoke.h>
 #include "atari_lib.h"
 #include "splash.h"
 #include <joystick.h>
+#include "scores.c"
 
 #define KBCODE 764
 #define FWidth 13
 #define MAX_Y 18
-
-typedef unsigned char byte;
 
 byte XSize, YSize;
 byte tacostr [] = "TACOT";
@@ -30,26 +28,23 @@ const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
 byte temp[FWidth];
 byte buffer[FWidth];
-unsigned char Joystick=1;
-byte rat1[5]={32,32,0,32,32};
-byte rat2[5]={32,1,2,7,32};
-byte rat3[5]={32,32,6,4,32};
+byte Joystick=1;
 
 //zero-terminated rows
 byte line_buffer[MAX_Y][FWidth+1];
 
 void main_screen(void) {
     int i,j;
-    grmode (0);
+    _graphics(0);
     load_font();
-    Joystick = joy_load_driver (atrstd_joy);
+    Joystick = joy_load_driver (atrxstd_joy);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
-    
-    // background decorations  
+
+    // background decorations
     for(i=0;i<XSize;i=i+1) {
-        for (j=0;j<MAX_Y;j=j+4){  
+        for (j=0;j<MAX_Y;j=j+4){
             cputsxy(i,j, "[" );
             cputsxy(i,j+1,">" );
             cputsxy(i,j+2,"[" );
@@ -61,8 +56,8 @@ void main_screen(void) {
     (void) textcolor (COLOR_BLACK);
     (void) bordercolor (COLOR_RED);
     (void) bgcolor (COLOR_GREEN);
-    
-    //Draw scene 
+
+    //Draw scene
     cvlinexy (border_left,2, MAX_Y-2);
     cvlinexy (border_right,2, MAX_Y-2);
     xcord=FWidth/2-2;
@@ -70,10 +65,10 @@ void main_screen(void) {
     chline (FWidth-1);
     cputcxy(border_left,  MAX_Y, CH_LLCORNER);
     cputcxy(border_right, MAX_Y, CH_LRCORNER);
- 
+
     //clean play area
     for(i=border_left+1;i<border_right;i++) {
-        for (j=0;j< MAX_Y ;j++){  
+        for (j=0;j< MAX_Y ;j++){
             cputsxy(i,j," ");
         }
     }
@@ -90,7 +85,7 @@ void play_sound_rat(void) {
         for (j=0; j<50; j++);
     }
     sound(0,0,0,0);
-    _setcolor_low(1,0xFF); 
+    _setcolor_low(1,0xFF);
     sound(0,20,10,10);
     for (i=0; i<500; i++); //change this for timer delay
     sound(0,0,0,0);
@@ -99,7 +94,6 @@ void play_sound_rat(void) {
     sound(0,0,0,0);
 }
 
-
 void rat_anim() {
     byte x,i;
     int d;
@@ -107,16 +101,15 @@ void rat_anim() {
         for(i=0;i<5;i++){
             cputcxy(x+i, MAX_Y+1, rat1[i]);
             cputcxy(x+i, MAX_Y+2, rat2[i]);
-            cputcxy(x+i, MAX_Y+3, rat3[i]); 
+            cputcxy(x+i, MAX_Y+3, rat3[i]);
         }
         for(d=0; d<500; d++);
     }
-    //TODO second frame    
+    //TODO second frame
     cputsxy(XSize-4, MAX_Y+1, "     ");
     cputsxy(XSize-4, MAX_Y+2, "     ");
-    cputsxy(XSize-4, MAX_Y+3, "     ");  
+    cputsxy(XSize-4, MAX_Y+3, "     ");
 }
-
 
 // When make a word, rat eats the last line
 void rat_routine() {
@@ -129,7 +122,7 @@ void rat_routine() {
         //restore line
         cputsxy(border_left+1, i,temp);
     }
-    //cvlinexy (border_right,2, MAX_Y-2);    
+    //cvlinexy (border_right,2, MAX_Y-2);
     //drop bottom line
     cputsxy(border_left+1, MAX_Y+1 ,buffer);
     sleep(1);
@@ -163,7 +156,7 @@ void draw_line (byte line) {
             if (rand()%10<=2) bits[rand()%2]='X';
         }
     }
-    
+
     key=PEEK(KBCODE);
     POKE(KBCODE,255);
     if (Joystick==JOY_ERR_OK) {
@@ -209,16 +202,16 @@ void draw_line (byte line) {
 }
 
 void splash_screen(void) {
-    grmode(7+16);
+    _graphics(7+16);
     _setcolor_low(0,0x24); //mouse face
-    _setcolor_low(1,0x2E); // tortilla, 
+    _setcolor_low(1,0x2E); // tortilla,
     _setcolor_low(2,0xEA); //border, letters
     if (read_sunraster("TACOBOT.BMP") ==1) {
         grmode(2);
         (void) bordercolor (COLOR_BLUE);
         cputsxy(6,2, "TACOBOT");
         printf("%s","         Press START key");
-    } else {    
+    } else {
         sound(0, 100, 0xC0, 12);
         sleep(1);
         sound(0,0,0,0);
@@ -232,7 +225,7 @@ byte block_at(x,y) {
 
     chr1=locate(x,y+1);
     chr2=locate(x+1,y+1);
-    
+
     if (chr1!=' ' || chr2!=' ') {
         return 1;
     }
@@ -258,10 +251,10 @@ void play_sound_taco(void) {
     int i=0;
     sound(0,144,10,8);
     for (i=0; i<1000; i++) {
-        _setcolor_low(1,(unsigned char) i); 
+        _setcolor_low(1,(unsigned char) i);
     }
     sound(0,0,0,0);
-    _setcolor_low(1,0xFF); 
+    _setcolor_low(1,0xFF);
     sound(0,20,20,10);
     for (i=0; i<500; i++); //change this for timer delay
     sound(0,0,0,0);
@@ -291,16 +284,16 @@ void eat_tacos() {
     byte j;
     char *idx;
     int position;
-    byte cline[FWidth+1]; 
+    byte cline[FWidth+1];
 
     for(i=MAX_Y;i>=0;i--) {
         strcpy(cline,line_buffer[i]);
-        found=1;   
+        found=1;
         while (found != 0) {
             idx = strstr(cline,"TACO");
             if (idx == NULL) {
                 found=0;
-            } 
+            }
             else {
                 position=idx-cline;
                 for(j=0;j<4;j++)
@@ -318,7 +311,7 @@ void eat_tacos() {
                 play_sound_taco();
                 rat_routine();
             }
-        }            
+        }
         found=0;
     }
 }
@@ -341,7 +334,9 @@ int main (void) {
         init();
         splash_screen();
         wait_start();
-        _randomize(); 
+        high_scores_screen();
+        cgetc();
+        _randomize();
         main_screen();
         while (end==0) {
             draw_line (line);

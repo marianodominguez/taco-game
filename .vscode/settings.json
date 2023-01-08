@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "cstddef": "c",
-        "atari_lib.h": "c"
+        "atari_lib.h": "c",
+        "font.h": "c",
+        "joystick.h": "c"
     }
 }

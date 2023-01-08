@@ -1,7 +1,7 @@
 .ONESHELL:
 .PRECIOUS: src/%.s src/%.map
-# Run 'make SYS=<target>'; or, set a SYS env.
-# var. to build for another target system.
+
+#Atari or atarixl
 SYS ?= atarixl
 
 NULLDEV = /dev/null
@@ -21,25 +21,30 @@ else
 endif
 
 taco: clean
-	$(CL) -t atari -C cfg/tacobot.cfg --mapfile tmp/taco.map -O -Os -Oi -Or --start-addr 0x3000 -Wl "-D__RESERVED_MEMORY__=0x3000" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c 
+	$(CL) -t $(SYS) -C cfg/tacobotxl.cfg --mapfile tmp/taco.map -O -Os -Oi -Or --start-addr 0x3000 -Wl "-D__RESERVED_MEMORY__=0x4B00" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
-dist: taco 
+dist: taco
 	mkdir -p tmp
 	rm -rf tmp/*
-	cp assets/blank.atr bin/taco.atr
 	cp bin/taco tmp/AUTO
 	cp resources/RATA.fnt tmp/RATA.FNT
 	cp resources/TACOBOT.BMP tmp/TACOBOT.BMP
-	dir2atr -md -B assets/xbootdos.obx bin/taco.atr tmp
+	dir2atr -S -B assets/xbootdos.obx bin/taco.atr tmp
+	#./reset_scores bin/taco.atr 500
 test:
-	$(CL) -t atari -C cfg/tacobot.cfg  -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/test_graphics.c src/atari_lib.s 
+	# $(CL) -t $(SYS) -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/ test_graphics.c src/atari_lib.s
+	$(CL) -t $(SYS) -I include -o bin/test_s test/test_scores.c src/scores.c
+	rm -rf tmp/*
+	cp bin/test_s tmp/AUTO
+	dir2atr -S -B assets/xbootdos.obx bin/test.atr tmp
+
 debug: clean
-	$(CC) -t atari -O -I include -o tmp/taco.s src/taco.c
-	$(CC) -t atari  -O -I include -o tmp/font.s src/font.c
-	$(CC) -t atari  -O -I include -o tmp/splash.s src/splash.c
-	$(AS) -t atari  -o tmp/taco.obj tmp/taco.s  
-	$(AS) -t atari  -o tmp/font.obj tmp/font.s
-	$(AS) -t atari  -o tmp/atari_lib.obj src/atari_lib.s
-	$(AS) -t atari  -o tmp/splash.obj tmp/splash.s
-	$(LD) -o bin/taco -C cfg/tacobot.cfg -D__RESERVED_MEMORY__=0x3000 --mapfile tmp/taco.map  tmp/taco.obj tmp/font.obj tmp/atari_lib.obj tmp/splash.obj atari.lib 
+	$(CC) -t $(SYS) -O -I include -o tmp/taco.s src/taco.c
+	$(CC) -t $(SYS)  -O -I include -o tmp/font.s src/font.c
+	$(CC) -t $(SYS)  -O -I include -o tmp/splash.s src/splash.c
+	$(AS) -t $(SYS)  -o tmp/taco.obj tmp/taco.s
+	$(AS) -t $(SYS)  -o tmp/font.obj tmp/font.s
+	$(AS) -t $(SYS)  -o tmp/atari_lib.obj src/atari_lib.s
+	$(AS) -t $(SYS)  -o tmp/splash.obj tmp/splash.s
+	$(LD) -o bin/taco -C cfg/tacobot.cfg -D__RESERVED_MEMORY__=0x3000 --mapfile tmp/taco.map  tmp/taco.obj tmp/font.obj tmp/atari_lib.obj tmp/splash.obj atari.lib
