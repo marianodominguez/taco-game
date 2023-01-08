@@ -31,13 +31,14 @@ dist: taco
 	cp resources/RATA.fnt tmp/RATA.FNT
 	cp resources/TACOBOT.BMP tmp/TACOBOT.BMP
 	dir2atr -S -B assets/xbootdos.obx bin/taco.atr tmp
-	#./reset_scores bin/taco.atr 500
+	./reset_scores bin/taco.atr 500
 test:
 	# $(CL) -t $(SYS) -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/ test_graphics.c src/atari_lib.s
 	$(CL) -t $(SYS) -I include -o bin/test_s test/test_scores.c src/scores.c
 	rm -rf tmp/*
 	cp bin/test_s tmp/AUTO
 	dir2atr -S -B assets/xbootdos.obx bin/test.atr tmp
+	./reset_scores bin/taco.atr 500
 
 debug: clean
 	$(CC) -t $(SYS) -O -I include -o tmp/taco.s src/taco.c
