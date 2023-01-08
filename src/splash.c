@@ -5,16 +5,16 @@
 #include <peekpoke.h>
 #include "atari_lib.h"
 #include "font.h"
+#include "byte.h"
 
+const byte file_header[] = {0x42, 0x4d, 0x9a, 0x1e,'\0'};
 
-const char file_header[] = {0x42, 0x4d, 0x9a, 0x1e,'\0'};
-
-char exit_code=0;
+byte exit_code=0;
 int screen;
 
 void read_header(FILE* fd) {
-    unsigned char header[8][5];
-    unsigned char *id;
+    byte header[8][5];
+    byte *id;
     int i,j;
     for(i=0;i<8;i++) {
         for(j=0;j<4;j++) {
@@ -22,11 +22,11 @@ void read_header(FILE* fd) {
         }
         header[i][4]='\0';
     }
-    
+
     strncpy(id,header[0],4);
 
     for(i=0;i<154-32;i++) {
-       j=fgetc(fd);     
+       j=fgetc(fd);
     }
 
     if (strncmp(id, file_header,4)) {
@@ -37,15 +37,15 @@ void read_header(FILE* fd) {
     }
 }
 
-void plot_byte(unsigned char byte, int offset) {
+void plot_byte(byte byte, int offset) {
     POKE(screen+offset, byte);
 }
 
 int read_sunraster(char* filename) {
-    unsigned char dbyte,nbyte;
+    byte dbyte,nbyte;
     int i=0;
     FILE* fd = fopen(filename, "r");
-    if (fd==NULL) 
+    if (fd==NULL)
         return EXIT_FAILURE;
 
     screen=PEEK(0x59)*256+PEEK(0x58);
