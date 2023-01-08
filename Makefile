@@ -2,7 +2,7 @@
 .PRECIOUS: src/%.s src/%.map
 
 #Atari or atarixl
-SYS ?= atarixl
+SYS ?= atari
 
 NULLDEV = /dev/null
 DEL = $(RM)
@@ -21,7 +21,7 @@ else
 endif
 
 taco: clean
-	$(CL) -t $(SYS) -C cfg/tacobotxl.cfg --mapfile tmp/taco.map -O -Os -Oi -Or --start-addr 0x3000 -Wl "-D__RESERVED_MEMORY__=0x4B00" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
+	$(CL) -t $(SYS) -C cfg/tacobot.cfg --mapfile tmp/taco.map -O -Os -Oi -Or --start-addr 0x3000 -Wl "-D__RESERVED_MEMORY__=0x4B00" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco
@@ -33,12 +33,12 @@ dist: taco
 	dir2atr -S -B assets/xbootdos.obx bin/taco.atr tmp
 	./reset_scores bin/taco.atr 500
 test:
-	# $(CL) -t $(SYS) -Wl "-D__RESERVED_MEMORY__=0x2000" -I include -o bin/test_g test/ test_graphics.c src/atari_lib.s
+	# $(CL) -t $(SYS) -Wl "-D__RESERVED_MEMORY__=0x4000" -I include -o bin/test_g test/ test_graphics.c src/atari_lib.s
 	$(CL) -t $(SYS) -I include -o bin/test_s test/test_scores.c src/scores.c
 	rm -rf tmp/*
 	cp bin/test_s tmp/AUTO
 	dir2atr -S -B assets/xbootdos.obx bin/test.atr tmp
-	./reset_scores bin/taco.atr 500
+	./reset_scores bin/test.atr 500
 
 debug: clean
 	$(CC) -t $(SYS) -O -I include -o tmp/taco.s src/taco.c

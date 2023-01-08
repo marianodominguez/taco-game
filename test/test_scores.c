@@ -47,7 +47,7 @@ int save_hscores(void)
 }
 
 int main() {
-    save_sectors();
-    //save_hscores();
+    //save_sectors();
+    save_hscores();
     return 0;
 }
