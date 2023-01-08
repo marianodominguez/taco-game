@@ -24,7 +24,7 @@ byte write_sector(byte* values, byte sector) {
     byte sector_lo = sector - sector_hi*256;
     byte buffer_hi = (int)(values) / 256;
     byte buffer_lo = (int)(values) - buffer_hi*256;
-    printf("%x,%x=%x\n",buffer_hi,buffer_lo,buffer);
+    printf("%x,%x=%x\n",buffer_hi,buffer_lo,values);
 
     POKE(DCB+1, 1);
     POKE(DCB+2, 0x50);
