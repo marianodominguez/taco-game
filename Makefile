@@ -21,7 +21,7 @@ else
 endif
 
 taco: clean
-	$(CL) -t $(SYS) -C cfg/tacobot.cfg --mapfile bin/taco.map -O -Os -Oi -Or -Wl "-D__RESERVED_MEMORY__=3500" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
+	$(CL) -t $(SYS) -C cfg/tacobot.cfg --mapfile bin/taco.map -O -Os -Oi -Or -Wl "-D__RESERVED_MEMORY__=3600" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco
@@ -34,7 +34,7 @@ dist: taco
 	./reset_scores bin/taco.atr 243
 test:
 # 	$(CL) -t $(SYS) -Wl "-D__RESERVED_MEMORY__=0x4000" -I include -o bin/test_g test/ test_graphics.c src/atari_lib.s
-	$(CL) -t $(SYS) --start-addr '0x3000' -I include -o bin/test_s test/test_scores.c src/scores.c
+	$(CL) -t $(SYS) -I include -o bin/test_s test/test_scores.c src/scores.c
 	rm -rf tmp/*
 	cp bin/test_s tmp/AUTO
 	dir2atr -S -B assets/xbootdos.obx bin/test.atr tmp

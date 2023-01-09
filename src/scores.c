@@ -44,7 +44,7 @@ byte read_sector(byte* buffer, byte sector) {
     byte sector_lo = sector - sector_hi*256;
     byte buffer_hi = (int)(buffer) / 256;
     byte buffer_lo = (int)(buffer) - buffer_hi*256;
-    printf("%x,%x=%x\n",buffer_hi,buffer_lo,buffer);
+    //printf("%x,%x=%x\n",buffer_hi,buffer_lo,buffer);
 
     POKE(DCB+1, 1);
     POKE(DCB+2, 0x52);
@@ -84,7 +84,7 @@ int load_scores(int scores[],byte names[NSIZE+1][NSCORES]) {
     j=NSCORES*2;
     for(i=0;i<NSCORES;i++) {
         strncpy(names[i],&_buffer[j],NSIZE);
-        names[i][NSIZE]='\0';
+        names[i][NSIZE+1]='\0';
         j+=NSIZE+1;
     }
     return v;
