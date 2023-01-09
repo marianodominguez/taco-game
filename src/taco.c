@@ -30,8 +30,8 @@ byte temp[FWidth];
 byte buffer[FWidth];
 byte Joystick=1;
 
-int high_scores[10];
-byte high_names[6][10];
+int high_scores[NSCORES];
+byte high_names[NSIZE+1][NSCORES];
 
 byte rat1[5]={32,32,0,32,32};
 byte rat2[5]={32,1,2,7,32};
@@ -84,13 +84,14 @@ void main_screen(void) {
 void high_scores_screen() {
     byte i;
     _graphics(2);
-    _setcolor_low(0,0x24); // background
+    _setcolor_low(0,0x24); //
     _setcolor_low(1,0x2E); // font1
-    _setcolor_low(2,0x00); //
+    _setcolor_low(2,0x24); // background
     _setcolor_low(3,0x25); // text window
 
     if(!load_scores(high_scores, high_names) ) {
         printf("Unable to load high scores ... press any key" );
+        cgetc();
         return;
     }
     for (i = 0; i < 3; i++)
@@ -365,8 +366,8 @@ int main (void) {
         line=0;
         end=0;
         init();
-        splash_screen();
-        wait_start();
+        //splash_screen();
+        //wait_start();
         high_scores_screen();
         cgetc();
         _randomize();
