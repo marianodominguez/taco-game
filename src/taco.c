@@ -29,13 +29,12 @@ int MAX_DELAY=5000;
 byte temp[FWidth];
 byte buffer[FWidth];
 byte Joystick=1;
-
-int high_scores[NSCORES];
-byte high_names[NSIZE+1][NSCORES];
-
 byte rat1[5]={32,32,0,32,32};
 byte rat2[5]={32,1,2,7,32};
 byte rat3[5]={32,32,6,4,32};
+
+int high_scores[NSCORES];
+byte high_names[NSIZE+1][NSCORES];
 
 //zero-terminated rows
 byte line_buffer[MAX_Y][FWidth+1];
@@ -44,7 +43,7 @@ void main_screen(void) {
     int i,j;
     _graphics(0);
     load_font();
-    Joystick = joy_load_driver (atrxstd_joy);
+    Joystick = joy_load_driver (atrstd_joy);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -366,8 +365,8 @@ int main (void) {
         line=0;
         end=0;
         init();
-        //splash_screen();
-        //wait_start();
+        splash_screen();
+        wait_start();
         high_scores_screen();
         cgetc();
         _randomize();
