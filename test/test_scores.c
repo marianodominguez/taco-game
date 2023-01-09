@@ -23,7 +23,6 @@ int save_sectors(void)
     for(i=1;i<128;i++) {
         printf("%d,", rbuffer[i]);
     }
-    cgetc();
     return 0;
 }
 
@@ -31,13 +30,12 @@ int save_hscores(void)
 {
     byte *n;
     for(i=0;i<10;i++) {
-        n=strncat(n,"MDMZZ",5);
-        strncpy(names[i],n,5);
+        strncpy(names[i],"MDMZZ",5);
     }
-    printf("\n");
+    //printf(" saving scores ...\n");
 
-    save_scores(test_scores, names);
-
+    //save_scores(test_scores, names);
+    printf(" loading scores ...\n");
     load_scores(r_test_scores, r_names);
     printf("\n");
     for(i=0;i<10;i++) {
@@ -47,7 +45,12 @@ int save_hscores(void)
 }
 
 int main() {
-    //save_sectors();
+    // save_sectors();
+    // printf(" sector working, press enter \n");
+    // cgetc();
+
     save_hscores();
+    printf(" scores working, press enter \n");
+    cgetc();
     return 0;
 }
