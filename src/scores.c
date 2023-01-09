@@ -56,7 +56,7 @@ byte read_sector(byte* buffer, byte sector) {
     return PEEK(DCB+3);
 }
 
-int save_scores(int scores[], byte names[NSIZE+1][NSCORES]) {
+int save_scores(int scores[], byte names[NSIZE+2][NSCORES]) {
     byte i,j;
     j=0;
     for(i=0;i<NSCORES;i++) {
@@ -72,7 +72,7 @@ int save_scores(int scores[], byte names[NSIZE+1][NSCORES]) {
     return write_sector(_buffer, SCORE_SECTOR);
 }
 
-int load_scores(int scores[],byte names[NSIZE+1][NSCORES]) {
+int load_scores(int scores[],byte names[NSIZE+2][NSCORES]) {
     byte i,j;
     int v;
     v=read_sector(_buffer, SCORE_SECTOR);
@@ -89,4 +89,3 @@ int load_scores(int scores[],byte names[NSIZE+1][NSCORES]) {
     }
     return v;
 }
-
