@@ -10,7 +10,7 @@ int test_scores[10]={1,2,3,4,5,6,7,8,9,10};
 byte names[6][10];
 
 int r_test_scores[10];
-byte r_names[6][10];
+byte r_names[7][10];
 byte rbuffer[128];
 
 int save_sectors(void)

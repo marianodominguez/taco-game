@@ -29,12 +29,13 @@ int delay;
 int MAX_DELAY=5000;
 int high_scores[NSCORES];
 byte high_names[NSIZE+2][NSCORES];
-byte temp[FWidth+1];
+
 byte buffer[FWidth+1];
 byte Joystick=1;
 byte rat1[5]={32,32,0,32,32};
 byte rat2[5]={32,1,2,7,32};
 byte rat3[5]={32,32,6,4,32};
+byte temp[FWidth+1];
 
 void main_screen(void) {
     int i,j;
@@ -149,7 +150,7 @@ void rat_anim() {
 // When make a word, rat eats the last line
 void rat_routine() {
     byte i,x;
-    strncpy(buffer,line_buffer[MAX_Y-1],FWidth-1);
+    strncpy(buffer,line_buffer[MAX_Y-1],FWidth-2);
     for(i=MAX_Y-1; i>1; i--) {
         strncpy(temp,line_buffer[i-1],FWidth-2);
         //clean current line
@@ -159,6 +160,7 @@ void rat_routine() {
     }
     //cvlinexy (border_right,2, MAX_Y-2);
     //drop bottom line
+    buffer[FWidth-2]='\0';
     cputsxy(border_left+1, MAX_Y+1 ,buffer);
     sleep(1);
     for (x=0; x<border_left; x++)
@@ -176,7 +178,7 @@ void draw_line (byte line) {
     byte key;
     int i;
     unsigned char J=0;
-    if (line>0 && line-1<MAX_Y) {
+    if (line>0 && line<MAX_Y+1) {
         cputsxy(xcord+border_left+1, line-1, blank);
         line_buffer[line-1][xcord]=' ';
         line_buffer[line-1][xcord+1]=' ';
