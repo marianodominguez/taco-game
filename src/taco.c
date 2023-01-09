@@ -14,35 +14,33 @@
 #define KBCODE 764
 #define FWidth 13
 #define MAX_Y 18
-
+byte BLANK_LINE[]="            ";
+//zero-terminated rows
+byte xcord,prev_x;
+byte border_left;
+byte border_right;
+byte line_buffer[MAX_Y][FWidth+1];
 byte XSize, YSize;
 byte tacostr [] = "TACOT";
 byte blank []   = "  ";
 byte bits []    = "  ";
 int score       = 1;
-byte xcord,prev_x;
-byte border_left;
-byte border_right;
 int delay;
-const byte BLANK_LINE[]="             ";
 int MAX_DELAY=5000;
-byte temp[FWidth];
-byte buffer[FWidth];
+int high_scores[NSCORES];
+byte high_names[NSIZE+2][NSCORES];
+byte temp[FWidth+1];
+byte buffer[FWidth+1];
 byte Joystick=1;
 byte rat1[5]={32,32,0,32,32};
 byte rat2[5]={32,1,2,7,32};
 byte rat3[5]={32,32,6,4,32};
 
-int high_scores[NSCORES];
-byte high_names[NSIZE+1][NSCORES];
-
-//zero-terminated rows
-byte line_buffer[MAX_Y][FWidth+1];
-
 void main_screen(void) {
     int i,j;
     _graphics(0);
     load_font();
+    POKE(752,1);         //hide cursor
     Joystick = joy_load_driver (atrstd_joy);
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
@@ -82,7 +80,10 @@ void main_screen(void) {
 
 void high_scores_screen() {
     byte i;
-    _graphics(2);
+    _graphics(0);
+    load_font();
+    POKE(752,1);         //hide cursor
+
     _setcolor_low(0,0x24); //
     _setcolor_low(1,0x2E); // font1
     _setcolor_low(2,0x24); // background
@@ -93,17 +94,18 @@ void high_scores_screen() {
         cgetc();
         return;
     }
-    for (i = 0; i < 3; i++)
+
+    for (i = 0; i < 5; i++)
     {
         cputcxy(i, 0, rat1[i]);
         cputcxy(i, 1, rat2[i]);
         cputcxy(i, 2, rat3[i]);
     }
-    cputsxy(6,1," * HIGH SCORES *" );
+    cputsxy(10,0,"    High scores:    " );
 
     for(i=0; i<NSCORES; i++) {
-        gotoxy(0,i+2);
-        printf("%d - %s", high_scores[i], high_names[i]);
+        gotoxy(20-6,2*i+3);
+        printf("%d - %s",high_scores[i],high_names[i]);
     }
 }
 
@@ -245,7 +247,7 @@ void splash_screen(void) {
         cputsxy(6,2, "TACOBOT");
         printf("%s","         Press START key");
     } else {
-        sound(0, 100, 0xC0, 12);
+        sound(0, 100, 11, 12);
         sleep(1);
         sound(0,0,0,0);
     }
@@ -278,7 +280,6 @@ void init(void) {
     score=1;
     delay=5000;
 }
-
 
 void play_sound_taco(void) {
     int i=0;
@@ -331,14 +332,14 @@ void eat_tacos() {
                 position=idx-cline;
                 for(j=0;j<4;j++)
                     line_buffer[i][position+j]=' ';
-                strcpy(cline,line_buffer[i]);
+                strncpy(cline,line_buffer[i],FWidth);
                 print_score();
                 score=score+1*found;
                 found++;
                 //for high scores, increase speed
                 MAX_DELAY=MAX_DELAY-score*10;
                 if(MAX_DELAY<=500) MAX_DELAY=500;
-                cputsxy(position+border_left+1,i, "    ");
+                cputsxy(position+border_left+1,i,"    ");
             }
             if (found!=0) {
                 play_sound_taco();
@@ -358,17 +359,39 @@ void wait_start() {
     }
 }
 
+void game_over_screen() {
+    byte i;
+    cputsxy(7, 9,  "============================");
+    cputsxy(7, 10, "=                          =");
+    cputsxy(7, 11, "=        GAME OVER         =");
+    cputsxy(7, 12, "=                          =");
+    cputsxy(7, 13, "= PRESS ENTER TO TRY AGAIN =");
+    cputsxy(7, 14, "=                          =");
+    cputsxy(7, 15, "============================");
+    cgetc();
+    i=NSCORES-1;
+    while (score<high_scores[i])
+    {
+        i--;
+    }
+    if (i>=NSCORES-1) return;
+    high_scores_screen();
+    cputsxy(10,0,"     YOU MADE IT TO THE HALL OF FAME !!" );
+    cputsxy(10,1,"     Use keyboard to enter your name " );
+    //name=scanf();
+}
+
 int main (void) {
     byte end=0;
     byte line=0;
+    splash_screen();
+    wait_start();
     while(1) {
         line=0;
         end=0;
         init();
-        splash_screen();
-        wait_start();
         high_scores_screen();
-        cgetc();
+        sleep(5);
         _randomize();
         main_screen();
         while (end==0) {
@@ -383,15 +406,7 @@ int main (void) {
                 line++;
             }
         }
-        cputsxy(7, 9,  "============================");
-        cputsxy(7, 10, "=                          =");
-        cputsxy(7, 11, "=        GAME OVER         =");
-        cputsxy(7, 12, "=                          =");
-        cputsxy(7, 13, "= PRESS ENTER TO TRY AGAIN =");
-        cputsxy(7, 14, "=                          =");
-        cputsxy(7, 15, "============================");
-        cgetc();
+        game_over_screen();
     }
     return EXIT_SUCCESS;
-
 }
