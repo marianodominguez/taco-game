@@ -2,7 +2,7 @@
 .PRECIOUS: src/%.s src/%.map
 
 #Atari or atarixl
-SYS ?= atari
+SYS ?= atarixl
 
 NULLDEV = /dev/null
 DEL = $(RM)
@@ -21,7 +21,7 @@ else
 endif
 
 taco: clean
-	$(CL) -t $(SYS) -C cfg/tacobot.cfg --mapfile tmp/taco.map -O -Os -Oi -Or --start-addr 0x3000 -Wl "-D__RESERVED_MEMORY__=0x4B00" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
+	$(CL) -t $(SYS) -C cfg/tacobotxl.cfg --mapfile tmp/taco.map -O -Os -Oi -Or --start-addr 0x3000 -Wl "-D__RESERVED_MEMORY__=0x3000" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco
