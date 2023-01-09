@@ -7,7 +7,7 @@
 /**
  * use Thomas Cherryhomes' convention to save high scores in a fixed sector
 */
-#define SCORE_SECTOR 0x1F4
+#define SCORE_SECTOR 500
 //#define SCORE_SECTOR 10
 #define SECTOR_SIZE 128
 #define DCB 0x300
@@ -56,7 +56,7 @@ byte read_sector(byte* buffer, byte sector) {
     return PEEK(DCB+3);
 }
 
-int save_scores(int scores[], byte names[NSIZE][NSCORES]) {
+int save_scores(int scores[], byte names[NSIZE+1][NSCORES]) {
     byte i,j;
     j=0;
     for(i=0;i<NSCORES;i++) {
@@ -72,13 +72,10 @@ int save_scores(int scores[], byte names[NSIZE][NSCORES]) {
     return write_sector(_buffer, SCORE_SECTOR);
 }
 
-int load_scores(int scores[],byte names[NSIZE][NSCORES]) {
+int load_scores(int scores[],byte names[NSIZE+1][NSCORES]) {
     byte i,j;
     int v;
     v=read_sector(_buffer, SCORE_SECTOR);
-    for(i=0;i<128;i++) {
-        printf("%c,", _buffer[i]);
-    }
     j=0;
     for(i=0;i<NSCORES*2;i+=2) {
         scores[j]=_buffer[i]*256+_buffer[i+1];
