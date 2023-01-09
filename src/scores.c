@@ -82,11 +82,9 @@ int load_scores(int scores[],byte names[NSIZE+1][NSCORES]) {
         j+=1;
     }
     j=NSCORES*2;
-    printf("\n");
     for(i=0;i<NSCORES;i++) {
         strncpy(names[i],&_buffer[j],NSIZE);
         names[i][NSIZE]='\0';
-        printf("%d -[%s]\n",j,names[i] );
         j+=NSIZE+1;
     }
     return v;
