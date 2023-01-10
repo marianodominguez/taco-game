@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
+#include <atari.h>
 #include <joystick.h>
 #include <unistd.h>
 #include <time.h>
@@ -81,6 +82,7 @@ void main_screen(void) {
 
 void high_scores_screen() {
     byte i;
+    byte col=6;
     _graphics(0);
     load_font();
     POKE(752,1);         //hide cursor
@@ -105,7 +107,7 @@ void high_scores_screen() {
     cputsxy(10,0,"    High scores:    " );
 
     for(i=0; i<NSCORES; i++) {
-        gotoxy(20-6,2*i+3);
+        gotoxy(col,2*i+3);
         printf("%d - %s",high_scores[i],high_names[i]);
     }
 }
@@ -361,8 +363,25 @@ void wait_start() {
     }
 }
 
+byte atascii(byte key)  {
+    byte iv=0;
+    if (key>127) {
+        iv=1;
+        key=key-128;
+    }
+    if(key<64) {
+        return key+32+128*iv;
+    }
+    if(key<96) {
+        return key-64+128*iv;
+    }
+    return key+128+iv;
+}
+
 void game_over_screen() {
-    byte i;
+    byte i,c,ch,key=0;
+    byte name[NSIZE+1];
+    byte col=6;
     cputsxy(7, 9,  "============================");
     cputsxy(7, 10, "=                          =");
     cputsxy(7, 11, "=        GAME OVER         =");
@@ -372,15 +391,49 @@ void game_over_screen() {
     cputsxy(7, 15, "============================");
     cgetc();
     i=NSCORES-1;
-    while (score<high_scores[i])
+    while (score>high_scores[i])
     {
         i--;
     }
     if (i>=NSCORES-1) return;
     high_scores_screen();
-    cputsxy(10,0,"     YOU MADE IT TO THE HALL OF FAME !!" );
-    cputsxy(10,1,"     Use keyboard to enter your name " );
+    cputsxy(4,0," YOU MADE IT TO THE HALL OF FAME !!" );
+    cputsxy(4,1," Use keyboard to enter your name " );
     //name=scanf();
+    strncpy(name,"     ",NSIZE);
+    name[NSIZE]='\0';
+    while(ch<5) {
+        gotoxy(col,2*i+3);
+        printf("%d - %s",high_scores[i],name);
+        _setcolor_low(1,0x2E); // font1
+        c=255;
+        while(--c) {
+            _setcolor_low(1,0x2E); // font1
+        }
+        key=PEEK(KBCODE);
+        POKE(KBCODE,255);
+        if(key<127 && key!=KEY_DELETE) {
+            name[ch]=atascii(key);
+            if (ch<4) ch++;
+            cputcxy('_',col+ch,2*i+3);
+        }
+        if(key==KEY_RETURN) {
+            ch=5;
+        }
+        if(key==KEY_DELETE) {
+            name[ch]=' ';
+            cputcxy(' ',col+ch,2*i+3);
+            ch--;
+            if (ch>=5) ch=0;
+        }
+        cputcxy('_',col+ch,2*i+3);
+    }
+    for(c=i;c<NSCORES-1;c++) {
+        high_scores[c+1]=high_scores[c];
+        strncpy(high_names[c+1],high_names[c],NSIZE);
+    }
+    strncpy(high_names[i],name,NSIZE);
+    high_scores[i]=score;
 }
 
 int main (void) {
