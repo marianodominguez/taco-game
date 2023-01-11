@@ -15,6 +15,11 @@
 #define KBCODE 764
 #define FWidth 13
 #define MAX_Y 18
+#define STRIG0 644
+#define STICK0 632
+#define ATTRACT 77
+#define CRSINH 752
+
 byte BLANK_LINE[]="            ";
 //zero-terminated rows
 byte xcord,prev_x;
@@ -32,7 +37,6 @@ int high_scores[NSCORES];
 byte high_names[NSIZE+2][NSCORES];
 
 byte buffer[FWidth+1];
-byte Joystick=1;
 byte rat1[5]={32,32,0,32,32};
 byte rat2[5]={32,1,2,7,32};
 byte rat3[5]={32,32,6,4,32};
@@ -41,9 +45,9 @@ byte temp[FWidth+1];
 void main_screen(void) {
     int i,j;
     _graphics(0);
+    POKE(ATTRACT,0)
     load_font();
-    POKE(752,1);         //hide cursor
-    Joystick = joy_load_driver (atrstd_joy);
+    POKE(CRSINH,1);         //hide cursor
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -85,7 +89,7 @@ void high_scores_screen() {
     byte col=6;
     _graphics(0);
     load_font();
-    POKE(752,1);         //hide cursor
+    POKE(CRSINH,1);         //hide cursor
 
     _setcolor_low(0,0x24); //
     _setcolor_low(1,0x2E); // font1
@@ -198,9 +202,7 @@ void draw_line (byte line) {
 
     key=PEEK(KBCODE);
     POKE(KBCODE,255);
-    if (Joystick==JOY_ERR_OK) {
-        J = joy_read (JOY_1);
-    }
+    J=PEEK(STICK0);
     if(key!=255) {
         //left
         cputsxy(xcord+border_left+1, line, blank);
@@ -294,10 +296,10 @@ void play_sound_taco(void) {
     sound(0,0,0,0);
     _setcolor_low(1,0xFF);
     sound(0,20,20,10);
-    for (i=0; i<500; i++); //change this for timer delay
+    for (i=0; i<500; i++); //TODO: change this for timer delay
     sound(0,0,0,0);
     sound(0,144,23,8);
-    for (i=0; i<500; i++); //change this for timer delay
+    for (i=0; i<500; i++);
     sound(0,0,0,0);
 }
 
@@ -357,7 +359,7 @@ void eat_tacos() {
 void wait_start() {
     int i;
     int key=0;
-    while (key!=6) {
+    while (key!=6 || PEEK(STRIG0)==0) {
         key = PEEK(0xD01f);
         for (i=0; i<500; i++);
     }
@@ -387,7 +389,7 @@ void game_over_screen() {
     //name=scanf();
     strncpy(name,"     ",NSIZE);
     name[NSIZE]='\0';
-    POKE(752,0);
+    POKE(CRSINH,0); // cursor on (broken)
     while(ch<5) {
         gotoxy(col,2*i+3);
         printf("%d - %s",high_scores[i],name);
@@ -419,7 +421,7 @@ void game_over_screen() {
     }
     strncpy(high_names[i],name,NSIZE);
     high_scores[i]=score;
-    POKE(752,1);
+    POKE(CRSINH,1);
     save_scores(high_scores, high_names);
 }
 
