@@ -363,23 +363,8 @@ void wait_start() {
     }
 }
 
-byte atascii(byte key)  {
-    byte iv=0;
-    if (key>127) {
-        iv=1;
-        key=key-128;
-    }
-    if(key<64) {
-        return key+32+128*iv;
-    }
-    if(key<96) {
-        return key-64+128*iv;
-    }
-    return key+128+iv;
-}
-
 void game_over_screen() {
-    byte i,c,ch,key=0;
+    byte i,c,ch,cchar=0;
     byte name[NSIZE+1];
     byte col=6;
     cputsxy(7, 9,  "============================");
@@ -402,6 +387,7 @@ void game_over_screen() {
     //name=scanf();
     strncpy(name,"     ",NSIZE);
     name[NSIZE]='\0';
+    POKE(752,0);
     while(ch<5) {
         gotoxy(col,2*i+3);
         printf("%d - %s",high_scores[i],name);
@@ -410,23 +396,22 @@ void game_over_screen() {
         while(--c) {
             _setcolor_low(1,0x2E); // font1
         }
-        key=PEEK(KBCODE);
-        POKE(KBCODE,255);
-        if(key<127 && key!=KEY_DELETE) {
-            name[ch]=atascii(key);
+        cchar=cgetc();
+        if(cchar<='z' && cchar>='!') {
+            name[ch]=cchar;
             if (ch<4) ch++;
-            cputcxy('_',col+ch,2*i+3);
         }
-        if(key==KEY_RETURN) {
+        if(cchar==155) {
             ch=5;
         }
-        if(key==KEY_DELETE) {
+        if(cchar==126) {
             name[ch]=' ';
             cputcxy(' ',col+ch,2*i+3);
             ch--;
             if (ch>=5) ch=0;
         }
-        cputcxy('_',col+ch,2*i+3);
+        cputcxy('*',col+ch,2*i+3);
+        cputcxy(name[ch],col+ch,2*i+3);
     }
     for(c=i;c<NSCORES-1;c++) {
         high_scores[c+1]=high_scores[c];
@@ -434,6 +419,8 @@ void game_over_screen() {
     }
     strncpy(high_names[i],name,NSIZE);
     high_scores[i]=score;
+    POKE(752,1);
+    save_scores(high_scores, high_names);
 }
 
 int main (void) {
