@@ -19,6 +19,7 @@
 #define STICK0 632
 #define ATTRACT 77
 #define CRSINH 752
+#define CHACT 755
 
 byte BLANK_LINE[]="            ";
 //zero-terminated rows
@@ -89,7 +90,7 @@ void high_scores_screen() {
     byte col=6;
     _graphics(0);
     load_font();
-    POKE(CRSINH,1);         //hide cursor
+    POKE(CRSINH,0);         //show cursor
 
     _setcolor_low(0,0x24); //
     _setcolor_low(1,0x2E); // font1
@@ -181,7 +182,7 @@ void rat_routine() {
 
 /*Draw the falling piece in screen, add X for high levels*/
 void draw_line (byte line) {
-    byte key;
+    byte key=0;
     int i;
     unsigned char J=0;
     if (line>0 && line<MAX_Y+1) {
@@ -209,7 +210,7 @@ void draw_line (byte line) {
         line_buffer[line][xcord]=' ';
         line_buffer[line][xcord+1]=' ';
 
-        if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT || JOY_LEFT (J)) {
+        if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
             if (xcord>0 && locate(xcord-1,line)==' ')  {
                 cputsxy(xcord+border_left+1, line, "  ");
                 xcord--;
@@ -218,7 +219,7 @@ void draw_line (byte line) {
             delay=MAX_DELAY;
         }
 
-        if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT || JOY_RIGHT (J)) {
+        if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
             if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ')  {
                 cputsxy(xcord+border_left+1, line," ");
                 xcord++;
@@ -226,10 +227,10 @@ void draw_line (byte line) {
             }
             delay=MAX_DELAY;
         }
-        if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN || JOY_DOWN (J)) {
+        if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN ) {
             delay=200;
         }
-        if(key==KEY_DASH || key==KEY_W || key==KEY_UP || JOY_UP (J)) {
+        if(key==KEY_DASH || key==KEY_W || key==KEY_UP) {
             delay=MAX_DELAY;
         }
         key=255;
@@ -390,6 +391,7 @@ void game_over_screen() {
     strncpy(name,"     ",NSIZE);
     name[NSIZE]='\0';
     POKE(CRSINH,0); // cursor on (broken)
+    POKE(CHACT,2); // transparent cursor
     while(ch<5) {
         gotoxy(col,2*i+3);
         printf("%d - %s",high_scores[i],name);
