@@ -44,6 +44,7 @@ byte temp[FWidth+1];
 void main_screen(void) {
     int i,j;
     _graphics(0);
+    clrscr()
     POKE(ATTRACT,0);
     load_font();
     cursor(0);         //hide cursor
@@ -86,7 +87,6 @@ void main_screen(void) {
 void high_scores_screen() {
     byte i;
     byte col=6;
-    _graphics(0);
     clrscr();
     load_font();
 
@@ -392,11 +392,11 @@ void game_over_screen() {
     while(ch<5) {
         gotoxy(col,2*i+3);
         printf("%d - %s",score,name);
-        _setcolor_low(1,0x2E); // font1
         c=255;
         while(--c) {
-            _setcolor_low(1,0x2E); // font1
+            _setcolor_low(1,0xc); // font1
         }
+        _setcolor_low(1,0x2E); // font1
         cchar=cgetc();
         if(cchar<='z' && cchar>='!') {
             name[ch]=cchar;
