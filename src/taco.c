@@ -45,7 +45,7 @@ byte temp[FWidth+1];
 void main_screen(void) {
     int i,j;
     _graphics(0);
-    POKE(ATTRACT,0)
+    POKE(ATTRACT,0);
     load_font();
     POKE(CRSINH,1);         //hide cursor
     screensize (&XSize, &YSize);
