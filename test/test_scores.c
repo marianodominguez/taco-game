@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <peekpoke.h>
 
 int i;
 
@@ -32,14 +33,21 @@ int save_hscores(void)
     for(i=0;i<10;i++) {
         strncpy(names[i],"MDMZZ",5);
     }
-    //printf(" saving scores ...\n");
+    //cputs(" saving scores ...\n");
 
     //save_scores(test_scores, names);
-    printf(" loading scores ...\n");
+    cputs(" loading scores ...\n");
     load_scores(r_test_scores, r_names);
-    printf("\n");
+    cputs("\n");
+
+    //POKE(752,0);
+    //POKE(755,2);
     for(i=0;i<10;i++) {
-        printf("%d - %s\n",r_test_scores[i],r_names[i] );
+        gotoxy(10,i+4);
+        cputs( itoa(r_test_scores[i],n,10) );
+        cputs("   -   ");
+        cputs(r_names[i]);
+        //printf("%d - %s\n",r_test_scores[i],r_names[i] );
     }
     return 0;
 }
@@ -50,7 +58,7 @@ int main() {
     // cgetc();
 
     save_hscores();
-    printf(" scores working, press enter \n");
+    //printf(" scores working, press enter \n");
     cgetc();
     return 0;
 }

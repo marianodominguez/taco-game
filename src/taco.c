@@ -18,8 +18,6 @@
 #define STRIG0 644
 #define STICK0 632
 #define ATTRACT 77
-#define CRSINH 752
-#define CHACT 755
 
 byte BLANK_LINE[]="            ";
 //zero-terminated rows
@@ -48,7 +46,7 @@ void main_screen(void) {
     _graphics(0);
     POKE(ATTRACT,0);
     load_font();
-    POKE(CRSINH,1);         //hide cursor
+    cursor(0);         //hide cursor
     screensize (&XSize, &YSize);
     border_left=XSize/2-FWidth/2;
     border_right=XSize/2+FWidth/2;
@@ -89,8 +87,8 @@ void high_scores_screen() {
     byte i;
     byte col=6;
     _graphics(0);
+    clrscr();
     load_font();
-    POKE(CRSINH,0);         //show cursor
 
     _setcolor_low(0,0x24); //
     _setcolor_low(1,0x2E); // font1
@@ -385,16 +383,15 @@ void game_over_screen() {
     }
     if (i>=NSCORES-1) return;
     high_scores_screen();
+    cursor(1);         //show cursor
     cputsxy(4,0," YOU MADE IT TO THE HALL OF FAME !!" );
     cputsxy(4,1," Use keyboard to enter your name " );
     //name=scanf();
     strncpy(name,"     ",NSIZE);
     name[NSIZE]='\0';
-    POKE(CRSINH,0); // cursor on (broken)
-    POKE(CHACT,2); // transparent cursor
     while(ch<5) {
         gotoxy(col,2*i+3);
-        printf("%d - %s",high_scores[i],name);
+        printf("%d - %s",score,name);
         _setcolor_low(1,0x2E); // font1
         c=255;
         while(--c) {
@@ -414,16 +411,16 @@ void game_over_screen() {
             ch--;
             if (ch>=5) ch=0;
         }
-        cputcxy('*',col+ch,2*i+3);
         cputcxy(name[ch],col+ch,2*i+3);
+        gotoxy(col+ch,2*i+3);
     }
-    for(c=i;c<NSCORES-1;c++) {
-        high_scores[c+1]=high_scores[c];
-        strncpy(high_names[c+1],high_names[c],NSIZE);
+    for(c=NSCORES-1;c<i;c--) {
+        high_scores[c]=high_scores[c-1];
+        strncpy(high_names[c],high_names[c-1],NSIZE);
     }
     strncpy(high_names[i],name,NSIZE);
     high_scores[i]=score;
-    POKE(CRSINH,1);
+    cursor(0);         //hide cursor
     save_scores(high_scores, high_names);
 }
 
