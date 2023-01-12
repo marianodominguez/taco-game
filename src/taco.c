@@ -18,6 +18,14 @@
 #define STRIG0 644
 #define STICK0 632
 #define ATTRACT 77
+#define hi_T 0x11
+#define hi_A 0x13
+#define hi_C 0x15
+#define hi_O 0x17
+#define lo_T 0x19
+#define lo_A 0x14
+#define lo_C 0x16
+#define lo_O 0x18
 
 byte BLANK_LINE[]="            ";
 //zero-terminated rows
@@ -29,6 +37,8 @@ byte XSize, YSize;
 byte tacostr [] = "TACOT";
 byte blank []   = "  ";
 byte bits []    = "  ";
+byte lo_bits [3];
+byte hi_bits [3];
 int score       = 1;
 int delay;
 int MAX_DELAY=5000;
@@ -37,14 +47,25 @@ byte high_names[NSIZE+2][NSCORES];
 
 byte buffer[FWidth+1];
 byte rat1[5]={32,32,0,32,32};
-byte rat2[5]={32,1,2,7,32};
-byte rat3[5]={32,32,6,4,32};
+byte rat2[5]={32,1,2,16,32};
+byte rat3[5]={32,32,5,4,32};
+
+byte rat4[5]={32,32,32,32,32};
+byte rat5[5]={32,6,7,8,32};
+byte rat6[5]={32,32,9,10,32};
+
+byte rat7[5]={32,32,0,32,32};
+byte rat8[5]={32,1,2,16,32};
+byte rat9[5]={32,32,12,4,32};
+
 byte temp[FWidth+1];
+byte low_str[]={lo_T, lo_A, lo_C, lo_O, lo_T,'\0'};
+byte high_str[]={hi_T, hi_A, hi_C, hi_O, hi_T,'\0'};
 
 void main_screen(void) {
     int i,j;
     _graphics(0);
-    clrscr()
+    clrscr();
     POKE(ATTRACT,0);
     load_font();
     cursor(0);         //hide cursor
@@ -87,6 +108,7 @@ void main_screen(void) {
 void high_scores_screen() {
     byte i;
     byte col=6;
+    _graphics(0);
     clrscr();
     load_font();
 
@@ -138,15 +160,30 @@ void play_sound_rat(void) {
 void rat_anim() {
     byte x,i;
     int d;
-    for(x=0; x<XSize-4; x++) {
+    x=0;
+    while(x<XSize-4) {
         for(i=0;i<5;i++){
             cputcxy(x+i, MAX_Y+1, rat1[i]);
             cputcxy(x+i, MAX_Y+2, rat2[i]);
             cputcxy(x+i, MAX_Y+3, rat3[i]);
         }
-        for(d=0; d<500; d++);
+        x++;
+        for(d=0; d<700; d++);
+        for(i=0;i<5;i++){
+            cputcxy(x+i, MAX_Y+1, rat4[i]);
+            cputcxy(x+i, MAX_Y+2, rat5[i]);
+            cputcxy(x+i, MAX_Y+3, rat6[i]);
+        }
+        x++;
+        for(d=0; d<700; d++);
+        for(i=0;i<5;i++){
+            cputcxy(x+i, MAX_Y+1, rat7[i]);
+            cputcxy(x+i, MAX_Y+2, rat8[i]);
+            cputcxy(x+i, MAX_Y+3, rat9[i]);
+        }
+        x++;
+        for(d=0; d<700; d++);
     }
-    //TODO second frame
     cputsxy(XSize-4, MAX_Y+1, "     ");
     cputsxy(XSize-4, MAX_Y+2, "     ");
     cputsxy(XSize-4, MAX_Y+3, "     ");
@@ -194,34 +231,50 @@ void draw_line (byte line) {
         //tacobot sends the occasional X
         delay=MAX_DELAY;
         strncpy(bits, tacostr+r, 2);
+        strncpy(lo_bits, low_str+r, 2);
+        strncpy(hi_bits, high_str+r, 2);
         if (score>=20) {
-            if (rand()%10<=2) bits[rand()%2]='X';
+            if (rand()%10<=2) {
+                i=rand()%2;
+                bits[i]='X';
+                lo_bits[i]=' ';
+                hi_bits[i]=' ';
+            }
         }
     }
 
     key=PEEK(KBCODE);
     POKE(KBCODE,255);
     J=PEEK(STICK0);
-    if(key!=255) {
-        //left
-        cputsxy(xcord+border_left+1, line, blank);
-        line_buffer[line][xcord]=' ';
-        line_buffer[line][xcord+1]=' ';
 
+    if (line>=1) cputsxy(xcord+border_left+1, line-1, blank);
+    if (line>=1) {
+        cputsxy(xcord+border_left+1, line-1, lo_bits);
+        cputsxy(xcord+border_left+1, line, hi_bits);
+    }
+    for (i=0; i<delay/2; i++) {
+    }
+    if (line>=1) cputsxy(xcord+border_left+1, line-1, blank);
+    cputsxy(xcord+border_left+1, line, bits);
+    line_buffer[line][xcord]=' ';
+    line_buffer[line][xcord+1]=' ';
+    if(key!=255) {
+        cputsxy(xcord+border_left+1, line, blank);
+        if (line>1) cputsxy(xcord+border_left+1, line-1, blank);
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
             if (xcord>0 && locate(xcord-1,line)==' ')  {
-                cputsxy(xcord+border_left+1, line, "  ");
+                //cputsxy(xcord+border_left+1, line, "  ");
                 xcord--;
-                cputsxy(xcord+border_left+1, line, bits);
+                //cputsxy(xcord+border_left+1, line, bits);
             }
             delay=MAX_DELAY;
         }
 
         if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
             if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ')  {
-                cputsxy(xcord+border_left+1, line," ");
+                //cputsxy(xcord+border_left+1, line," ");
                 xcord++;
-                cputsxy(xcord+border_left+1, line, bits);
+                //cputsxy(xcord+border_left+1, line, bits);
             }
             delay=MAX_DELAY;
         }
@@ -233,12 +286,10 @@ void draw_line (byte line) {
         }
         key=255;
     }
-    cputsxy(xcord+border_left+1, line, bits);
+    for (i=0; i<delay/2; i++) {
+    }
     line_buffer[line][xcord]=bits[0];
     line_buffer[line][xcord+1]=bits[1];
-    //sleep(0.5);
-    for (i=0; i<delay; i++) {
-    }
 }
 
 void splash_screen(void) {

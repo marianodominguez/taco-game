@@ -52,7 +52,7 @@ int read_sunraster(char* filename) {
     read_header(fd);
     //broken
     //fseek(fd, 66, SEEK_SET);
-    while( exit_code!=1 && i<160*96/4 ) {
+    while( exit_code!=1 && i<160*96/4 && PEEK(0xD01F)!=6) {
         dbyte=fgetc(fd);
         nbyte=fgetc(fd);
         dbyte=(dbyte&0xf0)<<2|(dbyte&0x0f)<<4;
