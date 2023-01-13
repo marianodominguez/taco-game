@@ -41,7 +41,7 @@ byte lo_bits [3];
 byte hi_bits [3];
 int score       = 1;
 int delay;
-int MAX_DELAY=5000;
+int MAX_DELAY=2000;
 int high_scores[NSCORES];
 byte high_names[NSIZE+2][NSCORES];
 
@@ -61,6 +61,8 @@ byte rat9[5]={32,32,12,4,32};
 byte temp[FWidth+1];
 byte low_str[]={lo_T, lo_A, lo_C, lo_O, lo_T,'\0'};
 byte high_str[]={hi_T, hi_A, hi_C, hi_O, hi_T,'\0'};
+byte key=0;
+
 
 void main_screen(void) {
     int i,j;
@@ -215,9 +217,23 @@ void rat_routine() {
     cputsxy( border_left+1, MAX_Y+1, BLANK_LINE );
 }
 
+void print_taco(int line,int tdelay) {
+    int i;
+    if (line>=1) {
+        cputsxy(xcord+border_left+1, line-1, blank);
+        cputsxy(xcord+border_left+1, line-1, lo_bits);
+        cputsxy(xcord+border_left+1, line, hi_bits);
+    }
+    for (i=0; i<tdelay/2; i++) {
+    }
+    if (line>=1) cputsxy(xcord+border_left+1, line-1, blank);
+    cputsxy(xcord+border_left+1, line, bits);
+    for (i=0; i<delay/2; i++) {
+    }
+}
+
 /*Draw the falling piece in screen, add X for high levels*/
 void draw_line (byte line) {
-    byte key=0;
     int i;
     unsigned char J=0;
     if (line>0 && line<MAX_Y+1) {
@@ -244,37 +260,24 @@ void draw_line (byte line) {
     }
 
     key=PEEK(KBCODE);
-    POKE(KBCODE,255);
     J=PEEK(STICK0);
 
-    if (line>=1) cputsxy(xcord+border_left+1, line-1, blank);
-    if (line>=1) {
-        cputsxy(xcord+border_left+1, line-1, lo_bits);
-        cputsxy(xcord+border_left+1, line, hi_bits);
-    }
-    for (i=0; i<delay/2; i++) {
-    }
-    if (line>=1) cputsxy(xcord+border_left+1, line-1, blank);
-    cputsxy(xcord+border_left+1, line, bits);
     line_buffer[line][xcord]=' ';
     line_buffer[line][xcord+1]=' ';
     if(key!=255) {
+        POKE(KBCODE,255);
         cputsxy(xcord+border_left+1, line, blank);
         if (line>1) cputsxy(xcord+border_left+1, line-1, blank);
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT) {
             if (xcord>0 && locate(xcord-1,line)==' ')  {
-                //cputsxy(xcord+border_left+1, line, "  ");
                 xcord--;
-                //cputsxy(xcord+border_left+1, line, bits);
             }
             delay=MAX_DELAY;
         }
 
         if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
             if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ')  {
-                //cputsxy(xcord+border_left+1, line," ");
                 xcord++;
-                //cputsxy(xcord+border_left+1, line, bits);
             }
             delay=MAX_DELAY;
         }
@@ -286,8 +289,7 @@ void draw_line (byte line) {
         }
         key=255;
     }
-    for (i=0; i<delay/2; i++) {
-    }
+    print_taco(line,delay);
     line_buffer[line][xcord]=bits[0];
     line_buffer[line][xcord+1]=bits[1];
 }
@@ -393,8 +395,8 @@ void eat_tacos() {
                 score=score+1*found;
                 found++;
                 //for high scores, increase speed
-                MAX_DELAY=MAX_DELAY-score*10;
-                if(MAX_DELAY<=500) MAX_DELAY=500;
+                MAX_DELAY=MAX_DELAY-score*5;
+                if(MAX_DELAY<=400) MAX_DELAY=400;
                 cputsxy(position+border_left+1,i,"    ");
             }
             if (found!=0) {
