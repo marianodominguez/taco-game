@@ -249,8 +249,8 @@ void draw_line (byte line) {
         strncpy(bits, tacostr+r, 2);
         strncpy(lo_bits, low_str+r, 2);
         strncpy(hi_bits, high_str+r, 2);
-        if (score>=20) {
-            if (rand()%10<=2) {
+        if (score>15) {
+            if (rand()%100<22) {
                 i=rand()%2;
                 bits[i]='X';
                 lo_bits[i]=' ';
@@ -274,7 +274,6 @@ void draw_line (byte line) {
             }
             delay=MAX_DELAY;
         }
-
         if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT) {
             if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ')  {
                 xcord++;
@@ -360,7 +359,7 @@ void print_score() {
     gotoxy(border_right+1,1);
     printf("Tacos: %d ",score);
     cputsxy(border_right+1,2,"<<<<<<<<<<");
-    if (score>=15) {
+    if (score>15) {
         _setcolor_low(2,0x36);
     }
 }
@@ -396,7 +395,7 @@ void eat_tacos() {
                 found++;
                 //for high scores, increase speed
                 MAX_DELAY=MAX_DELAY-score*5;
-                if(MAX_DELAY<=400) MAX_DELAY=400;
+                if(MAX_DELAY<=600) MAX_DELAY=600;
                 cputsxy(position+border_left+1,i,"    ");
             }
             if (found!=0) {
