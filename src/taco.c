@@ -394,8 +394,8 @@ void eat_tacos() {
                 score=score+1*found;
                 found++;
                 //for high scores, increase speed
-                MAX_DELAY=MAX_DELAY-score*5;
-                if(MAX_DELAY<=600) MAX_DELAY=600;
+                MAX_DELAY=MAX_DELAY-score*3;
+                if(MAX_DELAY<=700) MAX_DELAY=700;
                 cputsxy(position+border_left+1,i,"    ");
             }
             if (found!=0) {
