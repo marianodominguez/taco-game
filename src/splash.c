@@ -41,7 +41,7 @@ void plot_byte(byte byte, int offset) {
     POKE(screen+offset, byte);
 }
 
-int read_sunraster(char* filename) {
+int read_bitmap(char* filename) {
     byte dbyte,nbyte;
     int i=0;
     FILE* fd = fopen(filename, "r");
