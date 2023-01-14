@@ -36,8 +36,8 @@ byte write_sector(byte* values, byte sector) {
     return PEEK(DCB+3);
 }
 
-/*
-* Get score table form sector, returns 1 if sector was loaded
+/**
+* Get score table from sector, returns 1 if sector was loaded
 */
 byte read_sector(byte* buffer, byte sector) {
     byte sector_hi = sector / 256;

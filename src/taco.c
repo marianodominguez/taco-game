@@ -64,6 +64,7 @@ byte temp[FWidth+1];                    //Temporary value to copy arrays to stri
 byte low_str[]={lo_T, lo_A, lo_C, lo_O, lo_T,'\0'};  //lower part letters
 byte high_str[]={hi_T, hi_A, hi_C, hi_O, hi_T,'\0'}; //upper part letters
 byte key=0;                         //pressed key
+byte J; //joystick
 
 /**
  * game screen, initializes graphics 0 after splash screen, draws border and
@@ -257,7 +258,6 @@ void print_taco(int line,int tdelay) {
 
 void draw_line (byte line) {
     int i,xprob;
-    unsigned char J=0; //joystick
     //clear previous piece location
     if (line>0 && line<MAX_Y+1) {
         cputsxy(xcord+border_left+1, line-1, blank);
