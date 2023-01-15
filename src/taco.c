@@ -2,14 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <conio.h>
-#include <atari.h>
-#include <joystick.h>
 #include <unistd.h>
 #include <time.h>
 #include <peekpoke.h>
 #include "atari_lib.h"
 #include "splash.h"
-#include <joystick.h>
 #include "scores.c"
 
 #define HIGH_LEVEL_SCORE 15 // increase difficulty at this score
@@ -157,19 +154,19 @@ byte locate(byte X, byte Y) {
  * Rat animation sound effect
 */
 void play_sound_rat(void) {
-    int j,i=0;
-    for (i=0; i<144; i++) {
-        sound(0,144-i,10,8);
-        for (j=0; j<50; j++);
-    }
-    sound(0,0,0,0);
-    _setcolor_low(1,0xFF);
-    sound(0,20,10,10);
-    for (i=0; i<500; i++); //change this for timer delay
-    sound(0,0,0,0);
-    sound(0,144,23,8);
-    for (i=0; i<500; i++); //change this for timer delay
-    sound(0,0,0,0);
+    int j;
+    int i=0;
+
+    // for (j=0; j<144; j++) {
+    //     sound(1,(144-j),10,8);
+    //     for (i=0; i<50; i++);
+    // }
+    sound(1,144,10,8);
+    for (i=0; i<500; i++);
+    // sound(0,0,0,0);
+    // sound(0,100,10,8);
+    // for (i=0; i<500; i++);
+    sound(1,0,0,0);
 }
 /**
  * Rat eats taco animation
@@ -285,34 +282,34 @@ void draw_line (byte line) {
     }
 
     key=PEEK(KBCODE); // pressed key
+    cputcxy(0,10,key);
     J=PEEK(STICK0);
 
     line_buffer[line][xcord]=' ';
     line_buffer[line][xcord+1]=' ';
-    if(key!=255) {
-        POKE(KBCODE,255); //clear keyboard buffer
+    if(key!=255 || J!=15) {
         cputsxy(xcord+border_left+1, line, blank);
         if (line>1) cputsxy(xcord+border_left+1, line-1, blank);
-        if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT || J==11) {
+        if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT || J==11 ) {
             if (xcord>0 && locate(xcord-1,line)==' ')  {
                 xcord--;
             }
             delay=MAX_DELAY;
         }
-        if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT || J==7) {
+        if(key==KEY_ASTERISK || key==KEY_D || key==KEY_RIGHT || J==7 ) {
             if (xcord<border_right-border_left-3 && locate(xcord+2,line)==' ')  {
                 xcord++;
             }
             delay=MAX_DELAY;
         }
-        if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN || J==13) {
+        if(key==KEY_EQUALS || key==KEY_S || key==KEY_DOWN || J==13 ) {
             delay=200;
         }
         if(key==KEY_DASH || key==KEY_W || key==KEY_UP || J==14 ) {
             delay=MAX_DELAY;
         }
-        key=255;
     }
+    POKE(KBCODE,255); //clear keyboard buffer
     print_taco(line,delay); // draw piece animation
     line_buffer[line][xcord]=bits[0];
     line_buffer[line][xcord+1]=bits[1];
@@ -329,7 +326,7 @@ void splash_screen(void) {
     _setcolor_low(2,0xEA); //border, letters
 
     if (read_bitmap("TACOBOT.BMP") ==1) {
-        grmode(2);
+        _graphics(2);
         (void) bordercolor (COLOR_BLUE);
         cputsxy(6,2, "TACOBOT");
         printf("%s","         Press START key");
@@ -378,16 +375,11 @@ void init(void) {
 */
 void play_sound_taco(void) {
     int i=0;
-    sound(0,144,10,8);
-    for (i=0; i<1000; i++) {
-        _setcolor_low(1,(unsigned char) i);
-    }
-    sound(0,0,0,0);
-    _setcolor_low(1,0xFF);
+    sound(0,120,10,8);
+    for (i=0; i<1000; i++);
     sound(0,20,20,10);
     for (i=0; i<500; i++); //TODO: change this for timer delay
-    sound(0,0,0,0);
-    sound(0,144,23,8);
+    sound(0,120,10,8);
     for (i=0; i<500; i++);
     sound(0,0,0,0);
 }
@@ -442,7 +434,7 @@ void eat_tacos() {
                 cputsxy(position+border_left+1,i,"    ");
             }
             if (found!=0) {
-                play_sound_taco();
+                //play_sound_taco();
                 rat_routine();
             }
         }
