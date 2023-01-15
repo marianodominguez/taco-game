@@ -521,6 +521,22 @@ void game_over_screen() {
     save_scores(high_scores, high_names);
 }
 
+
+/**
+ * Call splash screen, uses routine to load a bmp (no RLE, color table, 8bpp)
+*/
+void end_game_screen(void) {
+    _graphics(2);
+    (void) bordercolor (COLOR_BLUE);
+    cputsxy(1,2, "YOU BEAT TACOBOT !");
+    printf("%s","Finally ! you survived the shift !\n");
+    printf("%s","So ... See you tomorrow at 8:00 ?\n< press enter>");
+    sound(0, 100, 12, 12);
+    sleep(1);
+    sound(0,0,0,0);
+    cgetc();
+}
+
 /**
  * Main game loop
 */
@@ -544,6 +560,12 @@ int main (void) {
                 xcord=FWidth/2-2;
                 if(line==1) end=1;
                 line=0;
+                if ( score>=10 && score%10==0) {
+                    end_game_screen();
+                    score++;
+                    main_screen();
+                }
+
             }
             else {
                 line++;
