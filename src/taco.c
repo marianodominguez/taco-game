@@ -157,15 +157,15 @@ void play_sound_rat(void) {
     int j;
     int i=0;
 
-    // for (j=0; j<144; j++) {
-    //     sound(1,(144-j),10,8);
-    //     for (i=0; i<50; i++);
-    // }
+    for (j=0; j<144; j++) {
+        sound(1,(144-j),10,8);
+        for (i=0; i<50; i++);
+    }
     sound(1,144,10,8);
     for (i=0; i<500; i++);
-    // sound(0,0,0,0);
-    // sound(0,100,10,8);
-    // for (i=0; i<500; i++);
+    sound(0,0,0,0);
+    sound(0,100,10,8);
+    for (i=0; i<500; i++);
     sound(1,0,0,0);
 }
 /**
@@ -434,7 +434,7 @@ void eat_tacos() {
                 cputsxy(position+border_left+1,i,"    ");
             }
             if (found!=0) {
-                //play_sound_taco();
+                play_sound_taco();
                 rat_routine();
             }
         }
