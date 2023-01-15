@@ -158,15 +158,15 @@ void play_sound_rat(void) {
     int i=0;
 
     for (j=0; j<144; j++) {
-        sound(1,(144-j),10,8);
+        sound(0,(144-j),10,8);
         for (i=0; i<50; i++);
     }
-    sound(1,144,10,8);
+    sound(0,144,10,8);
     for (i=0; i<500; i++);
     sound(0,0,0,0);
     sound(0,100,10,8);
     for (i=0; i<500; i++);
-    sound(1,0,0,0);
+    sound(0,0,0,0);
 }
 /**
  * Rat eats taco animation
@@ -282,8 +282,8 @@ void draw_line (byte line) {
     }
 
     key=PEEK(KBCODE); // pressed key
-    cputcxy(0,10,key);
     J=PEEK(STICK0);
+    POKE(KBCODE,255); //clear keyboard buffer
 
     line_buffer[line][xcord]=' ';
     line_buffer[line][xcord+1]=' ';
@@ -309,7 +309,7 @@ void draw_line (byte line) {
             delay=MAX_DELAY;
         }
     }
-    POKE(KBCODE,255); //clear keyboard buffer
+
     print_taco(line,delay); // draw piece animation
     line_buffer[line][xcord]=bits[0];
     line_buffer[line][xcord+1]=bits[1];
