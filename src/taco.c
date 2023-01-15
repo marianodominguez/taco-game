@@ -9,7 +9,7 @@
 #include "splash.h"
 #include "scores.c"
 
-#define HIGH_LEVEL_SCORE 15 // increase difficulty at this score
+#define HIGH_LEVEL_SCORE 10 // increase difficulty at this score
 #define HS_COL 15  //High scores display column
 #define KBCODE 764 // Keyboard address
 #define FWidth 13  //Playfield width
@@ -393,8 +393,8 @@ void print_score() {
     cputsxy(border_right+1,1, "Tacos: ");
     cputs(itoa(score,temp,10));
     cputsxy(border_right+1,2,"<<<<<<<<<<");
-    //for higher level score, change to red screen
-    if (score>=HIGH_LEVEL_SCORE) {
+    //for second high level score , change to red screen
+    if (score>=HIGH_LEVEL_SCORE+5) {
         _setcolor_low(2,0x36);
     }
 }
