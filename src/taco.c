@@ -367,7 +367,8 @@ void init(void) {
             line_buffer[j][FWidth]='\0';
     }
     score=1;
-    delay=5000;
+    MAX_DELAY=2000;
+    delay=MAX_DELAY;
 }
 
 /**
