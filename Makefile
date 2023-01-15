@@ -34,7 +34,8 @@ dist: taco
 	./reset_scores bin/taco.atr 243
 test:
 # 	$(CL) -t $(SYS) -Wl "-D__RESERVED_MEMORY__=0x4000" -I include -o bin/test_g test/ test_graphics.c src/atari_lib.s
-	$(CL) -t $(SYS) -I include -o bin/test_s test/test_scores.c src/scores.c
+#	$(CL) -t $(SYS) -I include -o bin/test_s test/test_scores.c src/scores.c
+	$(CL) -t $(SYS) -I include -o bin/test_s test/test_sound.c src/atari_lib.s
 	rm -rf tmp/*
 	cp bin/test_s tmp/AUTO
 	dir2atr -S -B assets/xbootdos.obx bin/test.atr tmp
