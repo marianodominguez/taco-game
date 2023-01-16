@@ -528,13 +528,14 @@ void game_over_screen() {
 void end_game_screen(void) {
     _graphics(2);
     (void) bordercolor (COLOR_BLUE);
-    cputsxy(1,2, "YOU BEAT TACOBOT !");
-    printf("%s","Finally ! you survived the shift !\n");
-    printf("%s","So ... See you tomorrow at 8:00 ?\n< press enter>");
+    cputsxy(1,2, "  YOU BEAT TACOBOT !");
+    cputsxy(1,3, "the door opens for you");
+    printf("%s","   Finally ! you survived the shift !\n");
+    printf("%s","   So ... See you tomorrow at 8:00 ?\n        Press START");
     sound(0, 100, 12, 12);
     sleep(1);
     sound(0,0,0,0);
-    cgetc();
+    wait_start();
 }
 
 /**
@@ -543,6 +544,7 @@ void end_game_screen(void) {
 int main (void) {
     byte end=0;
     byte line=0;
+    int pscore=0;
     splash_screen();
     wait_start();
     while(1) {
@@ -560,10 +562,14 @@ int main (void) {
                 xcord=FWidth/2-2;
                 if(line==1) end=1;
                 line=0;
-                if ( score>=10 && score%10==0) {
+                // the game "ends" at 100
+                if ( score>=100 && score%100==0) {
                     end_game_screen();
                     score++;
+                    pscore=score;
                     main_screen();
+                    init();
+                    score=pscore;
                 }
 
             }
