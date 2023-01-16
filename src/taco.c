@@ -523,7 +523,7 @@ void game_over_screen() {
 
 
 /**
- * Call splash screen, uses routine to load a bmp (no RLE, color table, 8bpp)
+ * Ends(?) game ... or at least the shift.
 */
 void end_game_screen(void) {
     _graphics(2);
