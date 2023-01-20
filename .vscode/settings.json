@@ -3,6 +3,7 @@
         "cstddef": "c",
         "atari_lib.h": "c",
         "font.h": "c",
-        "joystick.h": "c"
+        "joystick.h": "c",
+        "byte.h": "c"
     }
 }
