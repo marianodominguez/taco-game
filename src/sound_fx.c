@@ -30,33 +30,41 @@ int voice[4][4] = {
 //TODO: Implement music same as zx spectrum 128, except for midi strings
 // http://fizyka.umk.pl/~jacek/zx/doc/man128/sp128p10.html
 
-byte _parse_note(byte v, byte* note) {
-    byte *b;
+byte _parse_note(byte v, byte note[], unsigned int index) {
+    byte b[5],buf[5];
     byte command, value, idx=1;
     int presult;
 
-    presult=strncpy(b,note,2);
-    sscanf(b,"%c%2d", command, &value);
-
+    strncpy(b, &note[index] ,4);
+    //printf("[%s]\n", b);
+    presult=sscanf(b,"%c%3d", &command, &value);
+    printf("a %d,", presult );
+    if (presult==2) {
+        command=b[0];
+        idx=strlen(itoa(value,buf,10))+1;
+    }
     if(presult==EOF) {
         command='_';
         presult=sscanf(b,"%d", &value);
+        printf("b %d, ", presult );
+        idx=3;
     }
     if(presult==EOF) {
+        printf("c %d, ", presult );
         value=0;
         command=b[0];
+        idx=1;
     }
     if (command=='V') {
         voice[v][VOL]=value;
-        idx=3;
     }
-    if (command>='a' || command<='g') {
+    if (command>='a' && command<='g') {
         //TODO calculate freq
         voice[v][PITCH]=10+command;
         value=0;
         idx=1;
     }
-    if (command>='A' || command<='G') {
+    if (command>='A' && command<='G') {
         //TODO calculate freq
         voice[v][PITCH]=100+command;
         value=0;
@@ -67,7 +75,7 @@ byte _parse_note(byte v, byte* note) {
         voice[v][DURATION]=100*value;
         idx=1;
     }
-    printf("[%c],%d\n", command, value);
+    printf("%s = [%c],%d\n", b, command, value);
     return idx;
 }
 
@@ -85,7 +93,7 @@ int play(byte* a, byte* b, byte* c, byte* d) {
         notes_to_play=0;
         if( i < n[0] ) {
             notes_to_play=1;
-            i+=_parse_note(0,&a[i]);
+            i+=_parse_note(0,a,i);
         }
     }
     return 0;

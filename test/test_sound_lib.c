@@ -7,7 +7,7 @@
 int main(void)
 {
     int i;
-    byte * v1="V10abcfedgV8ABCDEFG";
+    byte v1[]="V10abcfedgV8ABCDEFG";
     printf("parsing sound string \n");
     play(v1,"","","");
     for(i=0;i<1000;i++);
