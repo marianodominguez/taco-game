@@ -235,15 +235,18 @@ void rat_routine() {
 */
 void print_taco(int line,int tdelay) {
     int i;
-    if (line>=1) {
-        cputsxy(xcord+border_left+1, line-1, blank);
-        cputsxy(xcord+border_left+1, line-1, lo_bits);
-        cputsxy(xcord+border_left+1, line, hi_bits);
+    byte xc=xcord+border_left+1;
+    if (line>=1 && locate(xcord,line-1) == ' ' && locate(xcord+1,line-1) == ' ') {
+        cputsxy(xc, line-1, lo_bits);
+        cputsxy(xc, line, hi_bits);
     }
     for (i=0; i<tdelay/2; i++) {
     }
-    if (line>=1) cputsxy(xcord+border_left+1, line-1, blank);
-    cputsxy(xcord+border_left+1, line, bits);
+    if (line>=1) {
+        cputcxy(xc, line-1, locate(xcord,line-1));
+        cputcxy(xc+1, line-1, locate(xcord+1,line-1));
+    }
+    cputsxy(xc, line, bits);
     for (i=0; i<delay/2; i++) {
     }
 }
@@ -275,8 +278,8 @@ void draw_line (byte line) {
             if (rand()%100<xprob) {
                 i=rand()%2;
                 bits[i]='X';
-                lo_bits[i]=' ';
-                hi_bits[i]=' ';
+                lo_bits[i]='$';
+                hi_bits[i]='$';
             }
         }
     }
@@ -309,10 +312,9 @@ void draw_line (byte line) {
             delay=MAX_DELAY;
         }
     }
-
-    print_taco(line,delay); // draw piece animation
     line_buffer[line][xcord]=bits[0];
     line_buffer[line][xcord+1]=bits[1];
+    print_taco(line,delay); // draw piece animation
 }
 
 
@@ -320,14 +322,17 @@ void draw_line (byte line) {
  * Call splash screen, uses routine to load a bmp (no RLE, color table, 8bpp)
 */
 void splash_screen(void) {
+    byte dma=PEEK(559);
     _graphics(7+16);
     _setcolor_low(0,0x24); //mouse face
     _setcolor_low(1,0x2E); // tortilla,
     _setcolor_low(2,0xEA); //border, letters
+    POKE(559,0);
+    POKE(65,0);
 
     if (read_bitmap("TACOBOT.BMP") ==1) {
         _graphics(2);
-        (void) bordercolor (COLOR_BLUE);
+        (void) bordercolor(COLOR_BLUE);
         cputsxy(6,2, "TACOBOT");
         printf("%s","         Press START key");
     } else {
@@ -335,6 +340,7 @@ void splash_screen(void) {
         sleep(1);
         sound(0,0,0,0);
     }
+    POKE(559,dma);
 }
 /**
  * Find outif there is a character block under the coordinates, it needs
