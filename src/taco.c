@@ -71,7 +71,6 @@ void main_screen(void) {
     int i,j;
     _graphics(0);
     clrscr();  // graphics implementation does not always clears screen
-    POKE(ATTRACT,0);  //Disable attect mode (for joystick play)
     load_font();
     cursor(0);         //hide cursor, this is a global value
     screensize (&XSize, &YSize);    //calculates screen size and borders
@@ -291,6 +290,7 @@ void draw_line (byte line) {
     line_buffer[line][xcord]=' ';
     line_buffer[line][xcord+1]=' ';
     if(key!=255 || J!=15) {
+        POKE(ATTRACT,0);  //Disable attract mode (for joystick play)
         cputsxy(xcord+border_left+1, line, blank);
         if (line>1) cputsxy(xcord+border_left+1, line-1, blank);
         if(key==KEY_PLUS || key==KEY_A ||  key==KEY_LEFT || J==11 ) {
