@@ -4,16 +4,6 @@
 #include <stdio.h>
 #include <conio.h>
 
-/**
- * use Thomas Cherryhomes' convention to save high scores in a fixed sector
-*/
-#define SCORE_SECTOR 500
-//#define SCORE_SECTOR 10
-#define SECTOR_SIZE 128
-#define DCB 0x300
-#define NSCORES 10
-#define NSIZE 5
-
 byte _buffer[SECTOR_SIZE];
 
 /**

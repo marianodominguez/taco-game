@@ -21,7 +21,7 @@ else
 endif
 
 taco: clean
-	$(CL) -t $(SYS) -C cfg/tacobot.cfg --mapfile bin/taco.map -O -Os -Oi -Or -Wl "-D__RESERVED_MEMORY__=4000" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c
+	$(CL) -t $(SYS) -C cfg/tacobot.cfg --mapfile bin/taco.map -O -Os -Oi -Or -Wl "-D__RESERVED_MEMORY__=4000" -I include -o bin/taco src/font.c src/atari_lib.s src/splash.c src/taco.c src/sfx.s src/scores.h
 clean:
 	@$(DEL) bin/taco.* 2>$(NULLDEV)
 dist: taco

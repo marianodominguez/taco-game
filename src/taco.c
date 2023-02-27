@@ -7,7 +7,8 @@
 #include <peekpoke.h>
 #include "atari_lib.h"
 #include "splash.h"
-#include "scores.c"
+#include "scores.h"
+#include "sfx.h"
 
 #define HIGH_LEVEL_SCORE 10 // increase difficulty at this score
 #define HS_COL 15  //High scores display column
@@ -551,6 +552,7 @@ int main (void) {
     byte end=0;
     byte line=0;
     int pscore=0;
+    _play_sfx();
     splash_screen();
     wait_start();
     while(1) {
